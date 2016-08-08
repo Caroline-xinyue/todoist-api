@@ -13,8 +13,6 @@ After reading this section you should continue with the `Authentication`, in ord
 
 The most important section is the `Sync` section, and you should read it next, where the way that the API works is explained.
 
-The `Changelog` section is useful for those migrating from older versions of our API.
-
 The rest sections are the reference documentation of the different Todoist objects and endpoints, and you can continue reading them in the order you need them.
 
 
