@@ -8,7 +8,9 @@ language_tabs:
 
 includes:
   - overview
+  - tutorial
   - authorization
+  - sync
   - projects
   - templates
   - items

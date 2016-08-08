@@ -86,414 +86,39 @@ SOFTWARE.
 
 -->
 
-        <h1 id='api-overview'>API Overview</h1>
-<p>Todoist API (also known as the &ldquo;Sync API&rdquo;) is specially designed for efficient data sync between
-clients (e.g. our mobile apps) and Todoist.</p>
+        <h1 id='overview'>Overview</h1>
+<p>This is the official Todoist API documentation, a reference to the functionality our public API provides, with detailed description of each API endpoint, its parameters, and examples.</p>
 
-<p>All Sync API requests share the same endpoint URL:
-<strong>https://todoist.com/API/v7/sync</strong></p>
+<p><strong>Note that documentation for the older <a href="https://developer.todoist.com/v6/">Todoist API v6</a> is still available, but we strongly recommend you use or migrate your code to the current version, as the v6 may be deprecated in the near future. You can find a changelog and migration guide at the end of this section.</strong></p>
+<h2 id='summary-of-contents'>Summary of contents</h2>
+<p>In the <code class="prettyprint">Getting started</code> section we will try to present to you the Todoist API, in the simplest possible way, by using real examples, based on common tasks that many users want to accomplish.</p>
 
-<p>Sync API requests should be made in HTTP POST (application/x-www-form-urlencoded). Sync API responses, including errors, will be returned in JSON.</p>
+<p>After reading this section you should continue with the <code class="prettyprint">Authentication</code>, in order to learn all the details on the best way to authenticate to our server.</p>
 
-<p>Sync API supports the following features -</p>
+<p>The most important section is the <code class="prettyprint">Sync</code> section, and you should read it next, where the way that the API works is explained.</p>
 
-<ul>
-<li><p>Batching: reading and writing of multiple resources can be done in a single HTTP request. Batch requests help clients reduce the number of network calls needed to sync resources.</p></li>
-<li><p>Incremental sync: You only retrieve data that are updated since the last time you performed a sync request.</p></li>
-</ul>
+<p>The <code class="prettyprint">Changelog</code> section is useful for those migrating from older versions of our API.</p>
 
-<p><strong>Note that documentation for the older <a href="https://developer.todoist.com/v6/">Todoist API v6</a> is still available, but we strongly recommend you use or migrate your code to the current version, as the v6 may be deprecated in the near future.</strong></p>
-<h2 id='read-resources'>Read resources</h2>
+<p>The rest sections are the reference documentation of the different Todoist objects and endpoints, and you can continue reading them in the order you need them.</p>
+<h2 id='client-libraries-and-tools'>Client libraries and tools</h2>
+<p>Currently there is official support in the form of a Python library, but soon more languages might follow.  There&rsquo;s also a repository with some API tools that might be useful to users.</p>
+<h3 id='python'>Python</h3>
 <blockquote>
-<p>An example response of a read request.</p>
-</blockquote>
-<pre class="highlight shell"><code><span class="gp">$ </span>curl https://todoist.com/API/v7/sync <span class="se">\</span>
-    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
-    -d <span class="nv">sync_token</span><span class="o">=</span><span class="s1">'*'</span> <span class="se">\</span>
-    -d <span class="nv">resource_types</span><span class="o">=</span><span class="s1">'["all"]'</span>
-
-<span class="o">{</span>
-  <span class="s2">"collaborators"</span>: <span class="o">[</span> ... <span class="o">]</span>,
-  <span class="s2">"collaborator_states"</span>: <span class="o">[</span> ... <span class="o">]</span>,
-  <span class="s2">"day_orders"</span>: <span class="o">{</span> ... <span class="o">}</span>,
-  <span class="s2">"day_orders_timestamp"</span>: <span class="s2">"1344642991.1"</span>,
-  <span class="s2">"filters"</span>: <span class="o">[</span> ... <span class="o">]</span>,
-  <span class="s2">"full_sync"</span> : <span class="nb">true</span>,
-  <span class="s2">"items"</span>: <span class="o">[</span> ... <span class="o">]</span>,
-  <span class="s2">"labels"</span>: <span class="o">[</span> ... <span class="o">]</span>,
-  <span class="s2">"live_notifications"</span>: <span class="o">[</span> ... <span class="o">]</span>,
-  <span class="s2">"live_notifications_last_read_id"</span>: 0,
-  <span class="s2">"notes"</span>: <span class="o">[</span> ... <span class="o">]</span>,
-  <span class="s2">"project_notes"</span>: <span class="o">[</span> ... <span class="o">]</span>,
-  <span class="s2">"projects"</span>: <span class="o">[</span> ... <span class="o">]</span>,
-  <span class="s2">"reminders"</span>: <span class="o">[</span> ... <span class="o">]</span>,
-  <span class="s1">'settings_notifications: { ... },
-  "sync_token": "JLlaPv840mDQK4PLl6-hmjYMbP2h_RHsfPmIXuqmJI_zRiQHFww9olfDvSSpw74nrdvS",
-  "temp_id_mapping": { ... },
-  "user": { ... }
-}
-</span></code></pre>
-<pre class="highlight python"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">todoist</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">api</span> <span class="o">=</span> <span class="n">todoist</span><span class="o">.</span><span class="n">TodoistAPI</span><span class="p">(</span><span class="s">'0123456789abcdef0123456789abcdef01234567'</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">api</span><span class="o">.</span><span class="n">sync</span><span class="p">(</span><span class="n">resource_types</span><span class="o">=</span><span class="p">[</span><span class="s">'all'</span><span class="p">])</span>
-<span class="p">{</span>
-  <span class="s">'collaborators'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
-  <span class="s">'collaborator_states'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
-  <span class="s">'day_orders'</span><span class="p">:</span> <span class="p">{</span> <span class="o">...</span> <span class="p">},</span>
-  <span class="s">'day_orders_timestamp'</span><span class="p">:</span> <span class="s">'1344642991.1'</span><span class="p">,</span>
-  <span class="s">'filters'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
-  <span class="s">'full_sync'</span> <span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
-  <span class="s">'items'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
-  <span class="s">'labels'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
-  <span class="s">'live_notifications'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
-  <span class="s">'live_notifications_last_read_id'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-  <span class="s">'notes'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
-  <span class="s">'project_notes'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
-  <span class="s">'projects'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
-  <span class="s">'reminders'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
-  <span class="s">'settings_notifications: { ... },</span><span class="err">
-</span><span class="s">  '</span><span class="n">sync_token</span><span class="s">': '</span><span class="n">JLlaPv840mDQK4PLl6</span><span class="o">-</span><span class="n">hmjYMbP2h_RHsfPmIXuqmJI_zRiQHFww9olfDvSSpw74nrdvS</span><span class="s">',</span><span class="err">
-</span><span class="s">  '</span><span class="n">temp_id_mapping</span><span class="s">': { ... },</span><span class="err">
-</span><span class="s">  '</span><span class="n">user</span><span class="s">': { ... }</span><span class="err">
-</span><span class="s">}</span><span class="err">
-</span></code></pre>
-
-<p>To retrieve your user resources, make a Sync API request with the following parameters:</p>
-<h3 id='required-parameters'>Required parameters</h3>
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>token <em>String</em></td>
-<td>User&rsquo;s API token</td>
-</tr>
-<tr>
-<td>sync_token <em>String</em></td>
-<td>A special string, used to allow the client to perform incremental sync.  Pass <code class="prettyprint">*</code> to retrieve all active resource data.  More details about this below.</td>
-</tr>
-<tr>
-<td>resource_types <em>JSON array of strings</em></td>
-<td>Used to specify what resources to fetch from the server.  It should be a JSON-encoded array of strings. Here is a list of avaialbe resource types: <code class="prettyprint">labels</code>, <code class="prettyprint">projects</code>,<code class="prettyprint">items</code>, <code class="prettyprint">notes</code>, <code class="prettyprint">filters</code>, <code class="prettyprint">reminders</code>, <code class="prettyprint">locations</code>, <code class="prettyprint">user</code>, <code class="prettyprint">live_notifications</code>, <code class="prettyprint">collaborators</code>, <code class="prettyprint">notification_settings</code>. You may use <code class="prettyprint">all</code> to include all the resource types.</td>
-</tr>
-</tbody></table>
-<h3 id='optional-parameters'>Optional parameters</h3>
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>day_orders_timestamp</td>
-<td>The Sync API requests return <code class="prettyprint">day_orders_timestamp</code> that specifies when the day orders were last updated. If you omit <code class="prettyprint">day_orders_timestamp</code> then none of them will be fetched. If you specify <code class="prettyprint">day_orders_timestamp</code> then day orders will be returned if your timestamp is different from the servers. If you send <code class="prettyprint">day_orders_timestamp</code> and the day orders have not been updated then the server won&rsquo;t return the <code class="prettyprint">day_orders</code> entry at all.</td>
-</tr>
-</tbody></table>
-<h3 id='incremental-sync'>Incremental sync</h3>
-<p>The Sync API allows clients to retrieve only updated resources, and this is done by using the &ldquo;synchronization token&rdquo;, <code class="prettyprint">sync_token</code>, in your Sync API request.</p>
-
-<p>On your initial sync request, specify <code class="prettyprint">synt_token=*</code> in your request, and all the user&rsquo;s active resource data will be returned.
-Todoist API server will also return a new <code class="prettyprint">sync_token</code> in the Sync API response.</p>
-
-<p>In your subsequent Sync request, use the <code class="prettyprint">sync_token</code> that you received from your previous sync response,
-and the Todoist API server will return only the updated resource data.</p>
-<h3 id='response'>Response</h3>
-<p>When the request succeeds, an HTTP 200 response will be returned with a JSON object containing the requested resources and also a new <code class="prettyprint">sync_token</code>.</p>
-
-<table><thead>
-<tr>
-<th>Field</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>sync_token</td>
-<td>A new synchronization token. Used by the client in the next sync request to perform an incremental sync.</td>
-</tr>
-<tr>
-<td>full_sync</td>
-<td>Whether the response contains all data (a full synchronization) or just a part of them since the last sync.</td>
-</tr>
-<tr>
-<td>user</td>
-<td>A user object.</td>
-</tr>
-<tr>
-<td>projects</td>
-<td>An array of project objects.</td>
-</tr>
-<tr>
-<td>items</td>
-<td>A array of item objects.</td>
-</tr>
-<tr>
-<td>labels</td>
-<td>An array of label objects.</td>
-</tr>
-<tr>
-<td>filters</td>
-<td>A array of filter objects.</td>
-</tr>
-<tr>
-<td>day_orders</td>
-<td>A JSON object specifying the order of items in daily agenda. If <code class="prettyprint">day_orders_timestamp</code> is sent and day orders have not been updated then <code class="prettyprint">day_orders</code> won&rsquo;t be returned at all!</td>
-</tr>
-<tr>
-<td>day_orders_timestamp</td>
-<td>A string specifying when day orders were last updated. Use this to not fetch day orders on every request.</td>
-</tr>
-<tr>
-<td>reminders</td>
-<td>An array of reminder objects.</td>
-</tr>
-<tr>
-<td>collaborators</td>
-<td>A JSON object containing all collaborators for all shared projects. The <code class="prettyprint">projects</code> field contains the list of all shared projects, where the user acts as one of collaborators.</td>
-</tr>
-<tr>
-<td>collaborators_states</td>
-<td>An array specifying the state of each collaborator in each project. The state can be invited, active, inactive, deleted.</td>
-</tr>
-<tr>
-<td>live_notifications</td>
-<td>An array of live_notification objects</td>
-</tr>
-<tr>
-<td>live_notifications_last_read</td>
-<td>What is the last live notification the user has seen? This is used to implement unread notifications.</td>
-</tr>
-<tr>
-<td>settings_notifications</td>
-<td>User&rsquo;s notification setting, used by clients that support native notifications.</td>
-</tr>
-</tbody></table>
-<h2 id='write-resources'>Write resources</h2>
-<blockquote>
-<p>Example API call that creates a new project.</p>
-</blockquote>
-<pre class="highlight shell"><code><span class="gp">$ </span>curl https://todoist.com/API/v7/sync <span class="se">\</span>
-    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
-    -d <span class="nv">commands</span><span class="o">=</span><span class="s1">'[{"type": "project_add", "temp_id": "381e601f-0ef3-4ed6-bf95-58f896d1a314", "uuid": "ed1ce597-e4c7-4a88-ba48-e048d827c067", "args": {"name": "Project1", "item_order": 1, "indent": 1, "color": 1}}]'</span>
-<span class="o">{</span>
-  <span class="s2">"sync_token"</span>: <span class="s2">"JLlaPv840mDQK4PLl6-hmjYMbP2h_RHsfPmIXuqmJI_zRiQHFww9olfDvSSpw74nrdvS"</span>,
-  <span class="s2">"sync_status"</span>: <span class="o">{</span><span class="s2">"ed1ce597-e4c7-4a88-ba48-e048d827c067"</span>: <span class="s2">"ok"</span><span class="o">}</span>,
-  <span class="s2">"temp_id_mapping"</span>: <span class="o">{</span><span class="s2">"381e601f-0ef3-4ed6-bf95-58f896d1a314"</span>: 128501470<span class="o">}</span>
-<span class="o">}</span>
-</code></pre>
-<pre class="highlight python"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">todoist</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">api</span> <span class="o">=</span> <span class="n">todoist</span><span class="o">.</span><span class="n">TodoistAPI</span><span class="p">(</span><span class="s">'0123456789abcdef0123456789abcdef01234567'</span><span class="p">)</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">api</span><span class="o">.</span><span class="n">sync</span><span class="p">(</span><span class="n">commands</span><span class="o">=</span><span class="p">[{</span><span class="s">'type'</span><span class="p">:</span> <span class="s">'project_add'</span><span class="p">,</span> <span class="s">'temp_id'</span><span class="p">:</span> <span class="s">'381e601f-0ef3-4ed6-bf95-58f896d1a314'</span><span class="p">,</span> <span class="s">'uuid'</span><span class="p">:</span> <span class="s">'ed1ce597-e4c7-4a88-ba48-e048d827c067'</span><span class="p">,</span> <span class="s">'args'</span><span class="p">:</span> <span class="p">{</span><span class="s">'name'</span><span class="p">:</span> <span class="s">'Project1'</span><span class="p">,</span> <span class="s">'item_order'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">'indent'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">'color'</span><span class="p">:</span> <span class="mi">1</span><span class="p">}}]</span>
-<span class="p">{</span>
-  <span class="s">'sync_status'</span><span class="p">:</span> <span class="p">{</span><span class="s">'ed1ce597-e4c7-4a88-ba48-e048d827c067'</span><span class="p">:</span> <span class="s">'ok'</span><span class="p">},</span>
-  <span class="s">'temp_id_mapping'</span><span class="p">:</span> <span class="p">{</span><span class="s">'381e601f-0ef3-4ed6-bf95-58f896d1a314'</span><span class="p">:</span> <span class="mi">128501470</span><span class="p">},</span>
-  <span class="s">'sync_token'</span><span class="p">:</span> <span class="s">'JLlaPv840mDQK4PLl6-hmjYMbP2h_RHsfPmIXuqmJI_zRiQHFww9olfDvSSpw74nrdvS'</span>
-<span class="p">}</span>
-</code></pre>
-
-<p>To write to your user&rsquo;s Todoist resources, make a Sync API request with the following parameters</p>
-<h3 id='required-parameters'>Required parameters</h3>
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>commands</td>
-<td>A JSON array of Command object. Each command will be processed in the specified order.</td>
-</tr>
-<tr>
-<td>token</td>
-<td>API token</td>
-</tr>
-</tbody></table>
-<h3 id='command-object'>Command object</h3>
-<table><thead>
-<tr>
-<th>Field</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>type <em>String</em></td>
-<td>The type of the command.</td>
-</tr>
-<tr>
-<td>args <em>Object</em></td>
-<td>The arguments of this specific command.</td>
-</tr>
-<tr>
-<td>uuid <em>String</em></td>
-<td>Command UUID. More details about this below.</td>
-</tr>
-<tr>
-<td>temp_id <em>String</em></td>
-<td>Temporary resource ID, Optional. Only specified for commands that create new resource (&ldquo;item_add&rdquo; command). More details about this below.</td>
-</tr>
-</tbody></table>
-<h3 id='command-uuid'>Command UUID</h3>
-<p>API clients should generate a unique string ID for each command and specify it in the <code class="prettyprint">uuid</code> field. The Command UUID will be used for two purposes:</p>
-
-<ol>
-<li><p>Command result mapping: Each command&rsquo;s result will be stored in the <code class="prettyprint">sync_status</code> field of the response JSON object. The <code class="prettyprint">sync_status</code> object has its key mapped to a command&rsquo;s <code class="prettyprint">uuid</code> and its value containing the result of
-a command.</p></li>
-<li><p>Command idempotency: Todoist will not execute command that has same UUID as the previously executed commands. This will allow clients to safely retry each command without accidentally performing the command twice.</p></li>
-</ol>
-<h3 id='temporary-resource-id'>Temporary resource id</h3>
-<blockquote>
-<p>An example that shows how temporary ids can be used and referenced:</p>
-</blockquote>
-<pre class="highlight json"><code><span class="p">[</span><span class="w">
-  </span><span class="p">{</span><span class="w"> </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"project_add"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"temp_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"c7beb07f-b226-4eb1-bf63-30d782b07b1a"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Test Project"</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="s2">"uuid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ac417051-1cdc-4dc3-b4f8-14526d5bfd16"</span><span class="w">
-  </span><span class="p">},</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"item_add"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"temp_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"43f7ed23-a038-46b5-b2c9-4abda9097ffa"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-      </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"This is a test task"</span><span class="p">,</span><span class="w">
-      </span><span class="s2">"project_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"c7beb07f-b226-4eb1-bf63-30d782b07b1a"</span><span class="w">
-    </span><span class="p">},</span><span class="w">
-    </span><span class="s2">"uuid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"849fff4e-8551-4abb-bd2a-838d092775d7"</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">]</span><span class="w">
-</span></code></pre>
-
-<blockquote>
-<p>You can see that the project_add command specified a temp_id property (&ldquo;c7beb07f-b226-4eb1-bf63-30d782b07b1a&rdquo;) as placeholder of the actual project_id. The item_add command can refrence to this temporary project id. The API will automatically resolve these ids.
-&ldquo;`</p>
-</blockquote>
-
-<p>Some commands depend on the result of previous command. For instance, you have a command sequence: <code class="prettyprint">&quot;project_add&quot;</code> and <code class="prettyprint">&quot;item_add&quot;</code> which first creates a project and then add a new task to the newly created project. In order to run the later <code class="prettyprint">item_add</code> command, we need to obtain the project ID returned from the previous command. Therefore, the normal approach would be to run these two commands in two separate HTTP requests.</p>
-
-<p>The temporary resource ID feature allows you to run two or more dependent commands in a single HTTP request.
-For commands that are related to creation of resources (i.e. <code class="prettyprint">item_add</code>, <code class="prettyprint">project_add</code>), you can
-specify an extra <code class="prettyprint">temp_id</code> as a placeholder for the actual ID of the resource. The other commands in
-the same sequence could directly refer to <code class="prettyprint">temp_id</code> if needed.</p>
-<h3 id='response--error'>Response / Error</h3>
-<p>The result of command executions will be stored in the following response JSON object field:</p>
-
-<table><thead>
-<tr>
-<th>Data</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>temp_id_mapping <em>Object</em></td>
-<td>A dictionary object that maps temporary resource ids to real resource ids.</td>
-</tr>
-<tr>
-<td>sync_status <em>Object</em></td>
-<td>A dictionary object containing result of each command execution. The key will be the command&rsquo;s <code class="prettyprint">uuid</code> field and the value will be the result status of the command execution.</td>
-</tr>
-</tbody></table>
-
-<blockquote>
-<p>An example of a single request sync return value:</p>
-</blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"sync_status"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="s2">"863aca2c-65b4-480a-90ae-af160129abbd"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ok"</span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-
-<blockquote>
-<p>An example of a multiple requests sync return value:</p>
-</blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"sync_status"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"32eaa699-e9d7-47ed-91ea-e58d475791f1"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ok"</span><span class="p">,</span><span class="w">
-    </span><span class="s2">"bec5b356-3cc1-462a-9887-fe145e3e1ebf"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="s2">"error_code"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="s2">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Invalid temporary id"</span><span class="p">}</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-
-<blockquote>
-<p>An example of a single request operating on multiple objects return value:</p>
-</blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-  </span><span class="s2">"sync_status"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-    </span><span class="s2">"66386321-fb87-4f95-9dfe-7bf5c3823e85"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
-        </span><span class="s2">"128501470"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ok"</span><span class="p">,</span><span class="w">
-        </span><span class="s2">"128501607"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="s2">"error_code"</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="s2">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Project not found"</span><span class="p">}</span><span class="w">
-    </span><span class="p">}</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
-
-<p>The status result of each command execution is in the <code class="prettyprint">sync_status</code> dictionary object. The key is a command <code class="prettyprint">uuid</code> and the value will be the result status of the command execution. There are two possible values for each command status -</p>
-
-<ul>
-<li><p>an &quot;ok&rdquo; string which signals success of the command</p></li>
-<li><p>an error object containings error information of a command.</p></li>
-</ul>
-
-<p>Please see the adjacent code examples for the possible format of the <code class="prettyprint">sync_status</code>.</p>
-<h2 id='response-status-codes'>Response status codes</h2>
-<p>The server uses the HTTP status codes to indicate the success or failure of a request. And as is customary in web servers, a 2xx code indicates - success, a 4xx code - an error due to incorrect user provided information, and a 5xx code - an internal, possibly temporary, error.</p>
-
-<table><thead>
-<tr>
-<th>Status code</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>200 OK</td>
-<td>The request was processed successfuly.</td>
-</tr>
-<tr>
-<td>400 Bad Request</td>
-<td>The request was incorrect.</td>
-</tr>
-<tr>
-<td>401 Unauthorized</td>
-<td>Authentication is required, and has failed, or has not yet been provided.</td>
-</tr>
-<tr>
-<td>403 Forbidden</td>
-<td>The request was valid, but for something that is forbidden.</td>
-</tr>
-<tr>
-<td>404 Not Found</td>
-<td>The requested resource could not be found.</td>
-</tr>
-<tr>
-<td>429 Too Many Requests</td>
-<td>The user has sent too many requests in a given amount of time.</td>
-</tr>
-<tr>
-<td>500 Internal Server Error</td>
-<td>The request failed due to a server error.</td>
-</tr>
-<tr>
-<td>503 Service Unavailable</td>
-<td>The server is currently unable to handle the request.</td>
-</tr>
-</tbody></table>
-<h3 id='limits'>Limits</h3>
-<p>The maximum number of commands is 100 per request, and this is done to prevent timeouts and other problems when dealing with big requests.</p>
-
-<p>There&rsquo;s also a maximum number of 50 sync requests per minute for each user, in order to prevent clients from accidentally overloading our servers.</p>
-<h2 id='client-libraries'>Client libraries</h2><h3 id='python'>Python</h3>
-<blockquote>
-<p>install todoist python library via pip:</p>
+<p>You can install todoist python library via pip:</p>
 </blockquote>
 <pre class="highlight plaintext"><code>$ pip install todoist-python
 </code></pre>
 
-<p><a href="https://github.com/doist/todoist-python">Github</a></p>
+<p>You can find the <a href="https://github.com/doist/todoist-python">Python library source code</a> at its repository at Github.</p>
 
-<p><a href="http://todoist-python.readthedocs.org/en/latest/">Library doc</a></p>
+<p>You can also read the <a href="http://todoist-python.readthedocs.org/en/latest/">Python library documentation</a> online.</p>
 
-<p><a href="https://pypi.python.org/pypi/todoist-python">PyPI</a></p>
-<h2 id='v6-to-v7-migration-guide'>v6 to v7 migration guide</h2>
+<p>Finally, there&rsquo;s also a <a href="https://pypi.python.org/pypi/todoist-python">PyPI package</a> ready for you to install.</p>
+<h3 id='api-tools'>API tools</h3>
+<p>You can find the <a href="https://github.com/doist/todoist-api-tools">API tools</a> at its repository at Github.</p>
+
+<p>Examples of usage of the API tools can be found later on in this documentation.</p>
+<h2 id='migration-guide'>Migration guide</h2>
 <p>The new v7 Todoist API is still based on the original Todoist Sync API (as was the case for the v6 API), so the differences between the two APIs aren&rsquo;t as extended as those between the v5 and v6 APIs.</p>
 
 <p>In this section we document all the changes between the two different versions of our API, in order to make it easier to upgrade your client code.</p>
@@ -516,6 +141,822 @@ the same sequence could directly refer to <code class="prettyprint">temp_id</cod
 <li>The <code class="prettyprint">due_date</code> property of items was removed.</li>
 <li>Only 10 notes per item are returned with the <code class="prettyprint">sync</code> call and thus the <code class="prettyprint">get_item</code> call should be used for more.</li>
 </ul>
+
+        <h1 id='getting-started'>Getting started</h1>
+<p>In this section we will do some common things that many of our users ask for help on how to accomplish them.  We will mostly use the <code class="prettyprint">sync</code> call, which is described in detailed at the <code class="prettyprint">Sync</code> section, but for now you can just consider it just an endpoint, and you will soon figure some of the things it can do, just by having a look at some examples.</p>
+<h2 id='get-all-projects'>Get all projects</h2>
+<blockquote>
+<p>The example of how we get all projects:</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">$ </span>curl https://todoist.com/API/v7/sync <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
+    -d <span class="nv">sync_token</span><span class="o">=</span><span class="k">*</span> <span class="se">\</span>
+    -d <span class="nv">resource_items</span><span class="o">=</span><span class="s1">'["projects"]'</span>
+<span class="o">{</span>
+   <span class="s2">"projects"</span> : <span class="o">[</span>
+      <span class="o">{</span>
+         <span class="s2">"is_archived"</span> : 0,
+         <span class="s2">"color"</span> : 7,
+         <span class="s2">"shared"</span> : <span class="nb">false</span>,
+         <span class="s2">"inbox_project"</span> : <span class="nb">true</span>,
+         <span class="s2">"id"</span> : 176637162,
+         <span class="s2">"collapsed"</span> : 0,
+         <span class="s2">"item_order"</span> : 0,
+         <span class="s2">"name"</span> : <span class="s2">"Inbox"</span>,
+         <span class="s2">"is_deleted"</span> : 0,
+         <span class="s2">"indent"</span> : 1
+      <span class="o">}</span>
+   <span class="o">]</span>,
+   <span class="s2">"full_sync"</span> : <span class="nb">true</span>,
+   <span class="s2">"temp_id_mapping"</span> : <span class="o">{}</span>,
+   <span class="s2">"sync_token"</span> : <span class="s2">"aLGJg_2qwBE_kE3j9_Gn6uoKQtvQeyjm7UEz_aVwF8KdriDxw7e_InFZK61h"</span>
+<span class="o">}</span>
+</code></pre>
+<pre class="highlight shell"><code><span class="c"># RESTful</span>
+<span class="gp">$ </span>curl https://todoist.com/API/v7/projects/get_all <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567
+</code></pre>
+<pre class="highlight python"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">todoist.api</span> <span class="kn">import</span> <span class="n">TodoistAPI</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">api</span> <span class="o">=</span> <span class="n">TodoistAPI</span><span class="p">(</span><span class="s">'0123456789abcdef0123456789abcdef01234567'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">api</span><span class="o">.</span><span class="n">sync</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">api</span><span class="o">.</span><span class="n">state</span><span class="p">[</span><span class="s">'projects'</span><span class="p">])</span>
+<span class="p">[</span>
+  <span class="n">Project</span><span class="p">({</span>
+    <span class="s">'collapsed'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'color'</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="s">'id'</span><span class="p">:</span> <span class="mi">176637162</span><span class="p">,</span>
+    <span class="s">'inbox_project'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+    <span class="s">'indent'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'is_archived'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'is_deleted'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'item_order'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'name'</span><span class="p">:</span> <span class="s">'Inbox'</span><span class="p">,</span>
+    <span class="s">'shared'</span><span class="p">:</span> <span class="bp">False</span>
+  <span class="p">})</span>
+<span class="p">]</span>
+</code></pre>
+
+<p>Let&rsquo;s see first how we can get all projects a user has.</p>
+<h4 id='when-using-curl-through-the-shell-'>When using curl through the shell&hellip;</h4>
+<p>We send a request to the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
+
+<ul>
+<li>The user&rsquo;s API token which here is set to <code class="prettyprint">token=0123456789abcdef0123456789abcdef01234567</code>.</li>
+<li>A special sync token, which denotes that we want a full sync, in contrast to an incremental sync, which is denoted with the <code class="prettyprint">*</code> symbol, so we set <code class="prettyprint">sync_token=*</code>.</li>
+<li>That we want to get back only the <code class="prettyprint">projects</code>, and not any other data, so we set <code class="prettyprint">resource_items=&#39;[&quot;projects&quot;]&#39;</code>.</li>
+</ul>
+
+<p>In the results we get back, we notice the following data:</p>
+
+<ul>
+<li>All the user&rsquo;s projects, which in in this case it&rsquo;s only the <code class="prettyprint">Inbox</code> project.</li>
+<li>A special flag <code class="prettyprint">full_sync</code> which is set to <code class="prettyprint">true</code> here, and denotes we did a full sync.</li>
+<li>A new <code class="prettyprint">sync_token</code> which we can use later on to do incremental syncs.</li>
+<li>The <code class="prettyprint">temp_id_mapping</code> object which will be explained later on, and which it&rsquo;s empty now.</li>
+</ul>
+<h4 id='when-using-the-python-library-'>When using the python library&hellip;</h4>
+<p>We need to import the <code class="prettyprint">TodoistAPI</code> class from the <code class="prettyprint">todoist</code> module, create a <code class="prettyprint">TodoistAPI</code> object which we store to the <code class="prettyprint">api</code> variable, and specify our user API <code class="prettyprint">token</code>, that is <code class="prettyprint">0123456789abcdef0123456789abcdef01234567</code>.</p>
+
+<p>After that we can just do a sync by calling <code class="prettyprint">api.sync()</code>, and we can access the user&rsquo;s project through the <code class="prettyprint">api.state</code> object, so for projects that is <code class="prettyprint">api.state[&#39;projects&#39;]</code>.</p>
+<h2 id='add-a-new-project'>Add a new project</h2>
+<blockquote>
+<p>The example of how we create a new project:</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">$ </span>curl https://todoist.com/API/v7/sync <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
+    -d <span class="nv">sync_token</span><span class="o">=</span><span class="s2">"aLGJg_2qwBE_kE3j9_Gn6uoKQtvQeyjm7UEz_aVwF8KdriDxw7e_InFZK61h"</span> <span class="se">\</span>
+    -d <span class="nv">resource_items</span><span class="o">=</span><span class="s1">'["projects"]'</span> <span class="se">\</span>
+    -d <span class="nv">commands</span><span class="o">=</span><span class="s1">'[
+        { "type": "project_add",
+          "temp_id": "24a193a7-46f7-4314-b984-27b707bd2331",
+          "uuid": "e23db5ec-2f73-478a-a008-1cb4178d2fd1",
+          "args": { "name": "Project1" } }
+      ]'</span>
+<span class="o">{</span>
+   <span class="s2">"projects"</span> : <span class="o">[</span>
+      <span class="o">{</span>
+         <span class="s2">"is_deleted"</span> : 0,
+         <span class="s2">"indent"</span> : 1,
+         <span class="s2">"item_order"</span> : 1,
+         <span class="s2">"name"</span> : <span class="s2">"Project1"</span>,
+         <span class="s2">"collapsed"</span> : 0,
+         <span class="s2">"shared"</span> : <span class="nb">false</span>,
+         <span class="s2">"id"</span> : 176637191,
+         <span class="s2">"is_archived"</span> : 0,
+         <span class="s2">"color"</span> : 7
+      <span class="o">}</span>
+   <span class="o">]</span>,
+   <span class="s2">"temp_id_mapping"</span> : <span class="o">{</span>
+      <span class="s2">"24a193a7-46f7-4314-b984-27b707bd2331"</span> : 176637191
+   <span class="o">}</span>,
+   <span class="s2">"sync_status"</span> : <span class="o">{</span>
+      <span class="s2">"e23db5ec-2f73-478a-a008-1cb4178d2fd1"</span> : <span class="s2">"ok"</span>
+   <span class="o">}</span>,
+   <span class="s2">"sync_token"</span> : <span class="s2">"VRyFHr0Qo3Hr--pzINyT6nax4vW7X2YG5RQlw3lB-6eYOPbSZVJepa62EVhO"</span>,
+   <span class="s2">"full_sync"</span> : <span class="nb">false</span>
+<span class="o">}</span>
+</code></pre>
+<pre class="highlight shell"><code><span class="c"># RESTful</span>
+<span class="gp">$ </span>curl https://todoist.com/API/v7/projects/add <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
+    -d <span class="nv">name</span><span class="o">=</span><span class="s2">"Project1"</span>
+</code></pre>
+<pre class="highlight python"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">project1</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">'Project1'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">api</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">project1</span><span class="p">)</span>
+<span class="n">Project</span><span class="p">({</span>
+  <span class="s">'collapsed'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s">'color'</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+  <span class="s">'id'</span><span class="p">:</span> <span class="mi">176637191</span><span class="p">,</span>
+  <span class="s">'indent'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="s">'is_archived'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s">'is_deleted'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s">'item_order'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="s">'name'</span><span class="p">:</span> <span class="s">'Project1'</span><span class="p">,</span>
+  <span class="s">'shared'</span><span class="p">:</span> <span class="bp">False</span><span class="p">})</span>
+</code></pre>
+
+<p>Let&rsquo;s create a new project, and observe the result of our action.</p>
+<h4 id='when-using-curl-through-the-shell-'>When using curl through the shell&hellip;</h4>
+<p>We use again the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
+
+<ul>
+<li>The user&rsquo;s API token which is again set to <code class="prettyprint">token=0123456789abcdef0123456789abcdef01234567</code>.</li>
+<li>The sync token that we received on the reply of our previous request, and which denotes that we want an incremental sync, so we set <code class="prettyprint">sync_token=&quot;aLGJg_2qwBE_kE3j9_Gn6uoKQtvQeyjm7UEz_aVwF8KdriDxw7e_InFZK61h&quot;</code>.</li>
+<li>That we again want to get back only the <code class="prettyprint">projects</code>, and not any other data, so we set <code class="prettyprint">resource_items=&#39;[&quot;projects&quot;]&#39;</code>.</li>
+<li>We send a single <code class="prettyprint">project_add</code> command that will create a new project, and we specify as the only argument to that command the <code class="prettyprint">name</code> of the project which is set to <code class="prettyprint">Project1</code>.</li>
+<li>We also need to specify 2 UUIDs, one is the <code class="prettyprint">uuid</code> that that will uniquely identify our command, and one for the <code class="prettyprint">temp_id</code> which is a temporary ID we set to our new project, and we can use that later on to identify it to the server without a need to know its real ID that is assigned at the time of creation.</li>
+</ul>
+
+<p>In the results we get back, we notice the following data:</p>
+
+<ul>
+<li>The new project we added is returned as part of the user&rsquo;s <code class="prettyprint">projects</code>.</li>
+<li>The <code class="prettyprint">temp_id_mapping</code> object which tells us that the new object with UUID <code class="prettyprint">24a193a7-46f7-4314-b984-27b707bd2331</code> has a real ID <code class="prettyprint">176637191</code>, and we can use both of these IDs to refer to that project, and while the latter should be used whenever possible, the former can be also utilized on a temporary basis.</li>
+<li>The <code class="prettyprint">sync_status</code> object which tells us whether our command with UUID <code class="prettyprint">e23db5ec-2f73-478a-a008-1cb4178d2fd1</code> was succesful, or in case of error what exactly was the problem.</li>
+<li>The special flag <code class="prettyprint">full_sync</code> which is set to <code class="prettyprint">false</code> here, and denotes we did an incremental sync.</li>
+<li>A new <code class="prettyprint">sync_token</code> which we can use later on to continue doing incremental syncs.</li>
+</ul>
+<h4 id='when-using-the-python-library-'>When using the python library&hellip;</h4>
+<p>We call the <code class="prettyprint">api.projects.add()</code> call, supplying the name of the new project, and as a return value we get a new project object.  This object holds this new project, and which we store in the <code class="prettyprint">project1</code> variable.</p>
+
+<p>This object is only temporary, and only exists on our local state, so in order to ask the server to add it remotely on the system, too, we use the <code class="prettyprint">api.commit()</code> call, which does all the work of sending a request to add the project, and get back the new project&rsquo;s properties.</p>
+
+<p>Finally we print the new <code class="prettyprint">project1</code> object.</p>
+<h2 id='add-two-new-tasks'>Add two new tasks</h2>
+<blockquote>
+<p>The example of how we create two new tasks:</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">$ </span>curl https://todoist.com/API/v7/sync <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
+    -d <span class="nv">sync_token</span><span class="o">=</span><span class="s2">"VRyFHr0Qo3Hr--pzINyT6nax4vW7X2YG5RQlw3lB-6eYOPbSZVJepa62EVhO"</span> <span class="se">\</span>
+    -d <span class="nv">resource_items</span><span class="o">=</span><span class="s1">'["projects", "items"]'</span> <span class="se">\</span>
+    -d <span class="nv">commands</span><span class="o">=</span><span class="s1">'[
+        { "type": "item_add",
+          "temp_id": "fdef5d16-a40a-475e-bd4a-0ccbd6fd8c3f",
+          "uuid": "a3aa2f44-23b4-4986-b513-ef7663bbb752",
+          "args": { "project_id": "24a193a7-46f7-4314-b984-27b707bd2331", "content": "Task1" } },
+        { "type": "item_add",
+          "temp_id": "6f5e0b50-af7a-4133-bfc0-e8c041b819d2",
+          "uuid": "d16ad84a-e10b-4894-af7d-93ba6adf7a1e",
+          "args": { "project_id": 176637191, "content": "Task2" } },
+      ]'</span>
+<span class="o">{</span>
+  <span class="s2">"projecs"</span>: <span class="o">[]</span>,
+  <span class="s2">"items"</span> : <span class="o">[</span>
+    <span class="o">{</span>
+       <span class="s2">"collapsed"</span> : 0,
+       <span class="s2">"date_added"</span> : <span class="s2">"Mon 01 Aug 2016 13:19:45 +0000"</span>,
+       <span class="s2">"item_order"</span> : 2,
+       <span class="s2">"is_archived"</span> : 0,
+       <span class="s2">"indent"</span> : 1,
+       <span class="s2">"all_day"</span> : <span class="nb">false</span>,
+       <span class="s2">"day_order"</span> : 1,
+       <span class="s2">"assigned_by_uid"</span> : 1,
+       <span class="s2">"responsible_uid"</span> : null,
+       <span class="s2">"sync_id"</span> : null,
+       <span class="s2">"checked"</span> : 0,
+       <span class="s2">"date_lang"</span> : <span class="s2">"en"</span>,
+       <span class="s2">"user_id"</span> : 1,
+       <span class="s2">"labels"</span> : <span class="o">[]</span>,
+       <span class="s2">"is_deleted"</span> : 0,
+       <span class="s2">"date_string"</span> : <span class="s2">""</span>,
+       <span class="s2">"project_id"</span> : 176637191,
+       <span class="s2">"due_date_utc"</span> : null,
+       <span class="s2">"in_history"</span> : 0,
+       <span class="s2">"content"</span> : <span class="s2">"Task2"</span>,
+       <span class="s2">"id"</span> : 102835617,
+       <span class="s2">"priority"</span> : 1
+    <span class="o">}</span>,
+    <span class="o">{</span>
+       <span class="s2">"priority"</span> : 1,
+       <span class="s2">"id"</span> : 102835615,
+       <span class="s2">"content"</span> : <span class="s2">"Task1"</span>,
+       <span class="s2">"in_history"</span> : 0,
+       <span class="s2">"is_deleted"</span> : 0,
+       <span class="s2">"date_string"</span> : <span class="s2">""</span>,
+       <span class="s2">"project_id"</span> : 176637191,
+       <span class="s2">"due_date_utc"</span> : null,
+       <span class="s2">"checked"</span> : 0,
+       <span class="s2">"labels"</span> : <span class="o">[]</span>,
+       <span class="s2">"date_lang"</span> : <span class="s2">"en"</span>,
+       <span class="s2">"user_id"</span> : 1,
+       <span class="s2">"responsible_uid"</span> : null,
+       <span class="s2">"sync_id"</span> : null,
+       <span class="s2">"assigned_by_uid"</span> : 1,
+       <span class="s2">"day_order"</span> : -1,
+       <span class="s2">"indent"</span> : 1,
+       <span class="s2">"all_day"</span> : <span class="nb">false</span>,
+       <span class="s2">"item_order"</span> : 1,
+       <span class="s2">"is_archived"</span> : 0,
+       <span class="s2">"collapsed"</span> : 0,
+       <span class="s2">"date_added"</span> : <span class="s2">"Mon 01 Aug 2016 13:19:45 +0000"</span>
+    <span class="o">}</span>
+  <span class="o">]</span>,
+  <span class="s2">"temp_id_mapping"</span> : <span class="o">{</span>
+     <span class="s2">"1c0f8453-32f0-4bf1-8c31-2faf8fa59ef1"</span> : 176637191,
+     <span class="s2">"6f5e0b50-af7a-4133-bfc0-e8c041b819d2"</span> : 102835617,
+     <span class="s2">"fdef5d16-a40a-475e-bd4a-0ccbd6fd8c3f"</span> : 102835615
+  <span class="o">}</span>,
+  <span class="s2">"sync_status"</span> : <span class="o">{</span>,
+     <span class="s2">"a3aa2f44-23b4-4986-b513-ef7663bbb752"</span> : <span class="s2">"ok"</span>,
+     <span class="s2">"d16ad84a-e10b-4894-af7d-93ba6adf7a1e"</span> : <span class="s2">"ok"</span>
+  <span class="o">}</span>,
+  <span class="s2">"sync_token"</span> : <span class="s2">"Gm7DEx2RBn-mW9xGIJhAPOGRPWSlewfxGm0aY_W6IhThCp_8DDXmPU8ERu8u"</span>,
+  <span class="s2">"full_sync"</span> : <span class="nb">false</span>
+<span class="o">}</span>
+</code></pre>
+<pre class="highlight shell"><code><span class="c"># RESTful</span>
+<span class="gp">$ </span>curl https://todoist.com/API/v7/items/add <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
+    -d <span class="nv">content</span><span class="o">=</span><span class="s2">"Task1"</span> <span class="se">\</span>
+    -d <span class="nv">project_id</span><span class="o">=</span>176637191
+<span class="gp">$ </span>curl https://todoist.com/API/v7/items/add <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
+    -d <span class="nv">content</span><span class="o">=</span><span class="s2">"Task2"</span> <span class="se">\</span>
+    -d <span class="nv">project_id</span><span class="o">=</span>176637191
+</code></pre>
+<pre class="highlight python"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">project1</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">projects</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">'Project1'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">taks1</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">'Task1'</span><span class="p">,</span> <span class="n">project1</span><span class="p">[</span><span class="s">'id'</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">task2</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">'Task2'</span><span class="p">,</span> <span class="n">project1</span><span class="p">[</span><span class="s">'id'</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">api</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">task1</span><span class="p">,</span> <span class="n">task2</span><span class="p">)</span>
+<span class="p">(</span>
+  <span class="n">Item</span><span class="p">({</span>
+    <span class="s">'all_day'</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+    <span class="s">'assigned_by_uid'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'checked'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'collapsed'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'content'</span><span class="p">:</span> <span class="s">'Task1'</span><span class="p">,</span>
+    <span class="s">'date_added'</span><span class="p">:</span> <span class="s">'Mon 01 Aug 2016 13:19:45 +0000'</span><span class="p">,</span>
+    <span class="s">'date_lang'</span><span class="p">:</span> <span class="s">'en'</span><span class="p">,</span>
+    <span class="s">'date_string'</span><span class="p">:</span> <span class="s">''</span><span class="p">,</span>
+    <span class="s">'day_order'</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="s">'due_date_utc'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+    <span class="s">'id'</span><span class="p">:</span> <span class="mi">102835615</span><span class="p">,</span>
+    <span class="s">'in_history'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'indent'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'is_archived'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'is_deleted'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'item_order'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'labels'</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="s">'priority'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'project_id'</span><span class="p">:</span> <span class="mi">176637191</span><span class="p">,</span>
+    <span class="s">'responsible_uid'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+    <span class="s">'sync_id'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+    <span class="s">'user_id'</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="p">}),</span>
+  <span class="n">Item</span><span class="p">({</span>
+    <span class="s">'all_day'</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+    <span class="s">'assigned_by_uid'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'checked'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'collapsed'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'content'</span><span class="p">:</span> <span class="s">'Task2'</span><span class="p">,</span>
+    <span class="s">'date_added'</span><span class="p">:</span> <span class="s">'Mon 01 Aug 2016 13:19:45 +0000'</span><span class="p">,</span>
+    <span class="s">'date_lang'</span><span class="p">:</span> <span class="s">'en'</span><span class="p">,</span>
+    <span class="s">'date_string'</span><span class="p">:</span> <span class="s">''</span><span class="p">,</span>
+    <span class="s">'day_order'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'due_date_utc'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+    <span class="s">'id'</span><span class="p">:</span> <span class="mi">102835617</span><span class="p">,</span>
+    <span class="s">'in_history'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'indent'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'is_archived'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'is_deleted'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'item_order'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s">'labels'</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="s">'priority'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'project_id'</span><span class="p">:</span> <span class="mi">176637191</span><span class="p">,</span>
+    <span class="s">'responsible_uid'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+    <span class="s">'sync_id'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+    <span class="s">'user_id'</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="p">})</span>
+<span class="p">)</span>
+</code></pre>
+
+<p>Let&rsquo;s create two new tasks in one go, and observe the result of our action.</p>
+<h4 id='when-using-curl-through-the-shell-'>When using curl through the shell&hellip;</h4>
+<p>We use again the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
+
+<ul>
+<li>The user&rsquo;s API token same as on the previous requests.</li>
+<li>The sync token that we received as reply on our previous request.</li>
+<li>For this example lets get back both projects and items changed since last sync, so we set <code class="prettyprint">resource_items=&#39;[&quot;projects&quot;, &quot;items&quot;]&#39;</code>.</li>
+<li>We send two <code class="prettyprint">item_add</code> commands that will create a new task each, and we also specify the <code class="prettyprint">project_id</code> and the <code class="prettyprint">content</code> of each new task, and for one of the tasks we use the <code class="prettyprint">temp_id</code> of the previously created project to denote the <code class="prettyprint">project_id</code>, while for the other task we use the project&rsquo;s real ID, and we do that just to show that it has the same result.</li>
+<li>We also need to specify the <code class="prettyprint">uuid</code> and <code class="prettyprint">temp_id</code>, for the two commands and the two new tasks respectively.</li>
+</ul>
+
+<p>In the results we get back, we notice the following:</p>
+
+<ul>
+<li>An empty <code class="prettyprint">projects</code> array, which is expected as no new projects were added by our commands.</li>
+<li>The new tasks we added are returned as part of the user&rsquo;s <code class="prettyprint">items</code> array.</li>
+<li>The <code class="prettyprint">temp_id_mapping</code> object which tells us again that are the real IDs of the new tasks, and what were the <code class="prettyprint">temp_id</code>s we used.</li>
+<li>The <code class="prettyprint">sync_status</code> object which tells us again whether each command was successful.</li>
+<li>The special flag <code class="prettyprint">full_sync</code> which is set to <code class="prettyprint">false</code> here, and denotes we did an incremental sync.</li>
+<li>A new <code class="prettyprint">sync_token</code> which we can use later on to do more incremental syncs.</li>
+</ul>
+<h4 id='when-using-the-python-library-'>When using the python library&hellip;</h4>
+<p>We call the <code class="prettyprint">api.items.add()</code> call, supplying the content each new task and the project it should be added to, and as a return value we get a new item object, that holds the new task, and which we store to a variable.  Notice that we can get the project ID from the <code class="prettyprint">project1</code> object we created on the previous step, and specifically from the <code class="prettyprint">project1[&#39;id&#39;]</code> value.</p>
+
+<p>Again, in order to actually add the tasks on the server, we do an <code class="prettyprint">api.commit()</code> call, and so both item objects are populated with the properties these new tasks have.</p>
+
+<p>Finally we print the new <code class="prettyprint">task1</code> and <code class="prettyprint">task2</code> objects.</p>
+<h2 id='update-the-content-and-due-date-of-a-task'>Update the content and due date of a task</h2>
+<blockquote>
+<p>The example of how we update the content and due date of a task:</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">$ </span>curl https://todoist.com/API/v7/sync <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
+    -d <span class="nv">sync_token</span><span class="o">=</span><span class="s2">"Gm7DEx2RBn-mW9xGIJhAPOGRPWSlewfxGm0aY_W6IhThCp_8DDXmPU8ERu8u"</span> <span class="se">\</span>
+    -d <span class="nv">resource_items</span><span class="o">=</span><span class="s1">'["items"]'</span> <span class="se">\</span>
+    -d <span class="nv">commands</span><span class="o">=</span><span class="s1">'[
+        { "type": "item_update",
+          "uuid": "aca17834-da6f-4605-bde0-bd10be228878",
+          "args": { "id": "102835615", "content": "NewTask1", "date_string": "tomorrow at 10:00" } },
+      ]'</span>
+<span class="o">{</span>
+  <span class="s2">"items"</span> : <span class="o">[</span>
+    <span class="o">{</span>
+      <span class="s2">"sync_id"</span> : null,
+      <span class="s2">"project_id"</span> : 176637191,
+      <span class="s2">"date_lang"</span> : <span class="s2">"en"</span>,
+      <span class="s2">"labels"</span> : <span class="o">[]</span>,
+      <span class="s2">"is_deleted"</span> : 0,
+      <span class="s2">"is_archived"</span> : 0,
+      <span class="s2">"item_order"</span> : 1,
+      <span class="s2">"checked"</span> : 0,
+      <span class="s2">"priority"</span> : 1,
+      <span class="s2">"id"</span> : 102835615,
+      <span class="s2">"due_date_utc"</span> : <span class="s2">"Fri 05 Aug 2016 07:00:00 +0000"</span>,
+      <span class="s2">"assigned_by_uid"</span> : 1,
+      <span class="s2">"all_day"</span> : <span class="nb">false</span>,
+      <span class="s2">"day_order"</span> : -1,
+      <span class="s2">"collapsed"</span> : 0,
+      <span class="s2">"date_string"</span> : <span class="s2">"5 Aug 10:00 AM"</span>,
+      <span class="s2">"responsible_uid"</span> : null,
+      <span class="s2">"content"</span> : <span class="s2">"NewTask1"</span>,
+      <span class="s2">"user_id"</span> : 1,
+      <span class="s2">"in_history"</span> : 0,
+      <span class="s2">"indent"</span> : 1,
+      <span class="s2">"date_added"</span> : <span class="s2">"Mon 01 Aug 2016 13:19:45 +0000"</span>
+    <span class="o">}</span>
+  <span class="o">]</span>,
+  <span class="s2">"sync_status"</span> : <span class="o">{</span>
+     <span class="s2">"aca17834-da6f-4605-bde0-bd10be228878"</span> : <span class="s2">"ok"</span>
+  <span class="o">}</span>,
+  <span class="s2">"temp_id_mapping"</span> : <span class="o">{}</span>
+  <span class="s2">"sync_token"</span> : <span class="s2">"Zs1ahJjWROqjBMIJGCAmsToOXOEP-wa9x3HiuBEyr6ymUYoyAyhIHeXkS9HE9HfFXcAO"</span>,
+  <span class="s2">"full_sync"</span> : <span class="nb">false</span>,
+<span class="o">}</span>
+</code></pre>
+<pre class="highlight shell"><code><span class="c"># RESTful</span>
+<span class="gp">$ </span>curl https://todoist.com/API/v7/items/update <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
+    -d <span class="nv">id</span><span class="o">=</span><span class="s2">"102835615"</span> <span class="se">\</span>
+    -d <span class="nv">content</span><span class="o">=</span><span class="s2">"NewTask1"</span> <span class="se">\</span>
+    -d <span class="nv">date_string</span><span class="o">=</span><span class="s2">"tomorrow at 10:00"</span>
+</code></pre>
+<pre class="highlight python"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">task2</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">'Task2'</span><span class="p">,</span> <span class="n">project1</span><span class="p">[</span><span class="s">'id'</span><span class="p">])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">task1</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s">'NewTask1'</span><span class="p">,</span> <span class="n">date_string</span><span class="o">=</span><span class="s">'tomorrow at 10:00'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">api</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">task1</span><span class="p">)</span>
+<span class="n">Item</span><span class="p">({</span>
+  <span class="s">'all_day'</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+  <span class="s">'assigned_by_uid'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="s">'checked'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s">'collapsed'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s">'content'</span><span class="p">:</span> <span class="s">'NewTask1'</span><span class="p">,</span>
+  <span class="s">'date_added'</span><span class="p">:</span> <span class="s">'Mon 01 Aug 2016 13:19:45 +0000'</span><span class="p">,</span>
+  <span class="s">'date_lang'</span><span class="p">:</span> <span class="s">'en'</span><span class="p">,</span>
+  <span class="s">'date_string'</span> <span class="p">:</span> <span class="s">'5 Aug 10:00 AM'</span><span class="p">,</span>
+  <span class="s">'day_order'</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+  <span class="s">'due_date_utc'</span> <span class="p">:</span> <span class="s">'Fri 05 Aug 2016 07:00:00 +0000'</span><span class="p">,</span>
+  <span class="s">'id'</span><span class="p">:</span> <span class="mi">102835615</span><span class="p">,</span>
+  <span class="s">'in_history'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s">'indent'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="s">'is_archived'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s">'is_deleted'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s">'item_order'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="s">'labels'</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="s">'priority'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="s">'project_id'</span><span class="p">:</span> <span class="mi">176637191</span><span class="p">,</span>
+  <span class="s">'responsible_uid'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+  <span class="s">'sync_id'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+  <span class="s">'user_id'</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">})</span>
+</code></pre>
+
+<p>Let&rsquo;s update the content and due date of the first task we created in the previous step.</p>
+<h4 id='when-using-curl-through-the-shell-'>When using curl through the shell&hellip;</h4>
+<p>We use again the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
+
+<ul>
+<li>The user&rsquo;s API token same as on the previous requests.</li>
+<li>The sync token that we received as reply on our previous request.</li>
+<li>For this example lets get back only items changed since last sync, so we set <code class="prettyprint">resource_items=&#39;[&quot;items&quot;]&#39;</code>.</li>
+<li>We send an <code class="prettyprint">item_update</code> command that will update the task we created earlier, so we specify the <code class="prettyprint">id</code> of the task, its new <code class="prettyprint">content</code>, and its new due date with <code class="prettyprint">date_string</code>.</li>
+<li>We also need to specify the <code class="prettyprint">uuid</code> for this command.</li>
+</ul>
+
+<p>In the results we get back, we notice the following:</p>
+
+<ul>
+<li>The updates to all items since our last sync are returned as part of the user&rsquo;s <code class="prettyprint">items</code> array.</li>
+<li>The <code class="prettyprint">temp_id_mapping</code> here is empty since no new object was created.</li>
+<li>The <code class="prettyprint">sync_status</code> object which tells us again whether our command was successful.</li>
+<li>The special flag <code class="prettyprint">full_sync</code> which is set to <code class="prettyprint">false</code> here, and denotes we did an incremental sync.</li>
+<li>A new <code class="prettyprint">sync_token</code> which we can use later on to do more incremental syncs.</li>
+</ul>
+<h4 id='when-using-the-python-library-'>When using the python library&hellip;</h4>
+<p>We call the <code class="prettyprint">update()</code> call on the <code class="prettyprint">task1</code> object that we got in the previous step, so we call <code class="prettyprint">task1.update()</code>, and we specify the new <code class="prettyprint">content=NewTask1</code> and <code class="prettyprint">date_string=&#39;tomorrow at 10:00</code> parameters, in order to change the task&rsquo;s properties.</p>
+
+<p>Again, in order to update the task on the server, we do an <code class="prettyprint">api.commit()</code> call.</p>
+
+<p>Finally we print again the <code class="prettyprint">task1</code> object, which has its properties updated.</p>
+<h2 id='complete-a-task-and-delete-another-task'>Complete a task and delete another task</h2>
+<blockquote>
+<p>The example of how we complete a task an delete another task:</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">$ </span>curl https://todoist.com/API/v7/sync <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
+    -d <span class="nv">sync_token</span><span class="o">=</span><span class="s2">"Gm7DEx2RBn-mW9xGIJhAPOGRPWSlewfxGm0aY_W6IhThCp_8DDXmPU8ERu8u"</span> <span class="se">\</span>
+    -d <span class="nv">resource_items</span><span class="o">=</span><span class="s1">'["items"]'</span> <span class="se">\</span>
+    -d <span class="nv">commands</span><span class="o">=</span><span class="s1">'[
+        { "type": "item_complete",
+          "uuid": "7d9355c5-bd28-4d39-8b8b-0b7a7682eaa2",
+          "args": { "ids": ["102835615"] } },
+        { "type": "item_delete",
+          "uuid": "c27ee0dd-71b8-4725-af5c-3f6327bacdb4",
+          "args": { "ids": ["102835617"] } },
+      ]'</span>
+<span class="o">{</span>
+  <span class="s2">"items"</span> : <span class="o">[</span>
+    <span class="o">{</span>
+      <span class="s2">"date_added"</span> : <span class="s2">"Mon 01 Aug 2016 13:19:45 +0000"</span>,
+      <span class="s2">"assigned_by_uid"</span> : 1,
+      <span class="s2">"priority"</span> : 1,
+      <span class="s2">"user_id"</span> : 1,
+      <span class="s2">"all_day"</span> : <span class="nb">false</span>,
+      <span class="s2">"responsible_uid"</span> : null,
+      <span class="s2">"labels"</span> : <span class="o">[]</span>,
+      <span class="s2">"date_string"</span> : <span class="s2">""</span>,
+      <span class="s2">"checked"</span> : 0,
+      <span class="s2">"day_order"</span> : -1,
+      <span class="s2">"project_id"</span> : 176637191,
+      <span class="s2">"due_date_utc"</span> : null,
+      <span class="s2">"item_order"</span> : 2,
+      <span class="s2">"collapsed"</span> : 0,
+      <span class="s2">"in_history"</span> : 0,
+      <span class="s2">"indent"</span> : 1,
+      <span class="s2">"content"</span> : <span class="s2">"Task2"</span>,
+      <span class="s2">"sync_id"</span> : null,
+      <span class="s2">"is_archived"</span> : 0,
+      <span class="s2">"date_lang"</span> : <span class="s2">"en"</span>,
+      <span class="s2">"id"</span>: 102835617,
+      <span class="s2">"is_deleted"</span> : 1
+    <span class="o">}</span>,
+    <span class="o">{</span>
+      <span class="s2">"date_added"</span> : <span class="s2">"Mon 01 Aug 2016 13:19:45 +0000"</span>
+      <span class="s2">"date_string"</span> : <span class="s2">"5 Aug 10:00 AM"</span>,
+      <span class="s2">"labels"</span> : <span class="o">[]</span>,
+      <span class="s2">"responsible_uid"</span> : null,
+      <span class="s2">"all_day"</span> : <span class="nb">false</span>,
+      <span class="s2">"assigned_by_uid"</span> : 1,
+      <span class="s2">"priority"</span> : 1,
+      <span class="s2">"user_id"</span> : 1,
+      <span class="s2">"indent"</span> : 1,
+      <span class="s2">"in_history"</span> : 1,
+      <span class="s2">"collapsed"</span> : 0,
+      <span class="s2">"item_order"</span> : 32,
+      <span class="s2">"due_date_utc"</span> : <span class="s2">"Fri 05 Aug 2016 07:00:00 +0000"</span>,
+      <span class="s2">"project_id"</span> : 176637191,
+      <span class="s2">"day_order"</span> : 0,
+      <span class="s2">"checked"</span> : 1,
+      <span class="s2">"is_deleted"</span> : 0,
+      <span class="s2">"id"</span>: 102835615,
+      <span class="s2">"date_lang"</span> : <span class="s2">"en"</span>,
+      <span class="s2">"is_archived"</span> : 0,
+      <span class="s2">"content"</span> : <span class="s2">"NewTask1"</span>,
+      <span class="s2">"sync_id"</span> : null
+    <span class="o">}</span>
+  <span class="o">]</span>,
+  <span class="s2">"sync_status"</span> : <span class="o">{</span>
+     <span class="s2">"7d9355c5-bd28-4d39-8b8b-0b7a7682eaa2"</span> : <span class="s2">"ok"</span>
+     <span class="s2">"c27ee0dd-71b8-4725-af5c-3f6327bacdb4"</span> : <span class="s2">"ok"</span>
+  <span class="o">}</span>,
+  <span class="s2">"temp_id_mapping"</span> : <span class="o">{}</span>
+  <span class="s2">"sync_token"</span> : <span class="s2">"zjx5pDbKKJGYFZ1VBYlLvvBdZOBvrY_8QNKaMXoE4Vcp_WyLevfDJ4ebsFiu"</span>,
+  <span class="s2">"full_sync"</span> : <span class="nb">false</span>,
+<span class="o">}</span>
+</code></pre>
+<pre class="highlight shell"><code><span class="c"># RESTful</span>
+<span class="gp">$ </span>curl https://todoist.com/API/v7/items/complete <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
+    -d <span class="nv">ids</span><span class="o">=</span><span class="s1">'["102835615"]'</span>
+<span class="gp">$ </span>curl https://todoist.com/API/v7/items/delete <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
+    -d <span class="nv">ids</span><span class="o">=</span><span class="s1">'["102835617"]'</span>
+</code></pre>
+<pre class="highlight python"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">task1</span><span class="o">.</span><span class="n">complete</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">task2</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">api</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">(</span><span class="n">task1</span><span class="p">,</span> <span class="n">task2</span><span class="p">)</span>
+<span class="p">(</span>
+  <span class="n">Item</span><span class="p">({</span>
+    <span class="s">'all_day'</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+    <span class="s">'assigned_by_uid'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'checked'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'collapsed'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'content'</span><span class="p">:</span> <span class="s">'NewTask1'</span><span class="p">,</span>
+    <span class="s">'date_added'</span> <span class="p">:</span> <span class="s">'Mon 01 Aug 2016 13:19:45 +0000'</span>
+    <span class="s">'date_lang'</span><span class="p">:</span> <span class="s">'en'</span><span class="p">,</span>
+    <span class="s">'date_string'</span> <span class="p">:</span> <span class="s">'5 Aug 10:00 AM'</span><span class="p">,</span>
+    <span class="s">'day_order'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'due_date_utc'</span> <span class="p">:</span> <span class="s">'Fri 05 Aug 2016 07:00:00 +0000'</span><span class="p">,</span>
+    <span class="s">'id'</span><span class="p">:</span> <span class="mi">102835615</span><span class="p">,</span>
+    <span class="s">'in_history'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'indent'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'is_archived'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'is_deleted'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'item_order'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s">'labels'</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="s">'priority'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'project_id'</span> <span class="p">:</span> <span class="mi">176637191</span><span class="p">,</span>
+    <span class="s">'responsible_uid'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+    <span class="s">'sync_id'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+    <span class="s">'user_id'</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="p">}),</span>
+  <span class="n">Item</span><span class="p">({</span>
+    <span class="s">'all_day'</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+    <span class="s">'assigned_by_uid'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'checked'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'collapsed'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'content'</span><span class="p">:</span> <span class="s">'Task2'</span><span class="p">,</span>
+    <span class="s">'date_added'</span> <span class="p">:</span> <span class="s">'Mon 01 Aug 2016 13:19:45 +0000'</span><span class="p">,</span>
+    <span class="s">'date_lang'</span><span class="p">:</span> <span class="s">'en'</span><span class="p">,</span>
+    <span class="s">'date_string'</span><span class="p">:</span> <span class="s">''</span><span class="p">,</span>
+    <span class="s">'day_order'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'due_date_utc'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+    <span class="s">'id'</span><span class="p">:</span> <span class="mi">102835617</span><span class="p">,</span>
+    <span class="s">'in_history'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'indent'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'is_archived'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'is_deleted'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'item_order'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s">'labels'</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="s">'priority'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'project_id'</span> <span class="p">:</span> <span class="mi">176637191</span><span class="p">,</span>
+    <span class="s">'responsible_uid'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+    <span class="s">'sync_id'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+    <span class="s">'user_id'</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="p">})</span>
+<span class="p">)</span>
+</code></pre>
+
+<p>Let&rsquo;s complete the task we updated in the previous step, and delete the task we created earlier.</p>
+<h4 id='when-using-curl-through-the-shell-'>When using curl through the shell&hellip;</h4>
+<p>We use again the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
+
+<ul>
+<li>The user&rsquo;s API token same as on the previous requests.</li>
+<li>The sync token that we received as reply on our previous request.</li>
+<li>For this example lets get back only items changed since last sync, so we set <code class="prettyprint">resource_items=&#39;[&quot;items&quot;]&#39;</code>.</li>
+<li>We send an <code class="prettyprint">item_complete</code> command that will completed the task, and we specify only the <code class="prettyprint">ids</code> parameter with the ID of the task, and also we send an <code class="prettyprint">item_delete</code> command that will delete the other task, and again it expects an <code class="prettyprint">ids</code> parameter.</li>
+<li>We also need to specify the <code class="prettyprint">uuid</code> for this command.</li>
+</ul>
+
+<p>In the results we get back, we notice the following:</p>
+
+<ul>
+<li>The updates to all items since our last sync are returned as part of the user&rsquo;s <code class="prettyprint">items</code> array, where we can observe that for the task we completed it has a <code class="prettyprint">checked=1</code> property which denotes it&rsquo;s now completed, while the other task has a <code class="prettyprint">is_deleted=1</code> property which denotes it&rsquo;s now deleted.</li>
+<li>The <code class="prettyprint">temp_id_mapping</code> here is empty since no new object was created.</li>
+<li>The <code class="prettyprint">sync_status</code> object which tells us again whether our command was successful.</li>
+<li>The special flag <code class="prettyprint">full_sync</code> which is set to <code class="prettyprint">false</code> here, and denotes we did an incremental sync.</li>
+<li>A new <code class="prettyprint">sync_token</code> which we can use later on to do more incremental syncs.</li>
+</ul>
+<h4 id='when-using-the-python-library-'>When using the python library&hellip;</h4>
+<p>We call the <code class="prettyprint">complete()</code> method on the <code class="prettyprint">task1</code> object that we have already stored from earlier, and also the <code class="prettyprint">delete()</code> method on the <code class="prettyprint">task2</code> object.</p>
+
+<p>Again, in order to actually completed and delete the tasks on the server, we do an <code class="prettyprint">api.commit()</code> call.</p>
+
+<p>Finally we print the <code class="prettyprint">task1</code> and <code class="prettyprint">task2</code> objects, and we can observe that their <code class="prettyprint">checked=1</code> and <code class="prettyprint">is_deleted=1</code> properties have been set accordingly.</p>
+<h2 id='add-a-new-task-with-a-note-and-a-reminder'>Add a new task with a note and a reminder</h2>
+<blockquote>
+<p>The example of how we create a new task with a note and a reminder:</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">$ </span>curl https://todoist.com/API/v7/sync <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
+    -d <span class="nv">sync_token</span><span class="o">=</span><span class="s2">"VRyFHr0Qo3Hr--pzINyT6nax4vW7X2YG5RQlw3lB-6eYOPbSZVJepa62EVhO"</span> <span class="se">\</span>
+    -d <span class="nv">resource_items</span><span class="o">=</span><span class="s1">'["projects", "items"]'</span> <span class="se">\</span>
+    -d <span class="nv">commands</span><span class="o">=</span><span class="s1">'[
+        { "type": "item_add",
+          "temp_id": "160070ed-79a9-4e6b-988b-169052e9ef22",
+          "uuid": "cf6c3ef7-5579-40c2-87e1-b30a1f3cbefe",
+          "args": { "project_id": "176637191", "content": "Task3", "date_string": "monday 11am"} },
+        { "type": "note_add",
+          "temp_id": "7f4de51a-3b12-4364-a98b-26f041293eba",
+          "uuid": "0d9a0925-067e-47fb-9a86-c0cf359afd9f",
+          "args": { "item_id": "160070ed-79a9-4e6b-988b-169052e9ef22", "content": "Comment3" } },
+        { "type": "reminder_add",
+          "temp_id": "cda5ffcd-5035-47d9-a683-5dddce096811",
+          "uuid": "843a5719-b204-4f6e-9ff3-f55cb9140ba1",
+          "args": { "item_id": "160070ed-79a9-4e6b-988b-169052e9ef22", "date_string": "monday 10:45am"} },
+      ]'</span>
+<span class="o">{</span>
+  <span class="s2">"items"</span> : <span class="o">[</span>
+    <span class="o">{</span>
+      <span class="s2">"date_added"</span> : <span class="s2">"Fri 05 Aug 2016 11:47:58 +0000"</span>,
+      <span class="s2">"all_day"</span> : <span class="nb">false</span>,
+      <span class="s2">"day_order"</span> : 2,
+      <span class="s2">"user_id"</span> : 1,
+      <span class="s2">"due_date_utc"</span> : <span class="s2">"Mon 08 Aug 2016 08:00:00 +0000"</span>,
+      <span class="s2">"project_id"</span> : 176637191,
+      <span class="s2">"sync_id"</span> : null,
+      <span class="s2">"responsible_uid"</span> : null,
+      <span class="s2">"indent"</span> : 1,
+      <span class="s2">"content"</span> : <span class="s2">"Task3"</span>,
+      <span class="s2">"date_lang"</span> : <span class="s2">"en"</span>,
+      <span class="s2">"collapsed"</span> : 0,
+      <span class="s2">"in_history"</span> : 0,
+      <span class="s2">"labels"</span> : <span class="o">[]</span>,
+      <span class="s2">"item_order"</span> : 1,
+      <span class="s2">"date_string"</span> : <span class="s2">"8 Aug 11:00 AM"</span>,
+      <span class="s2">"id"</span> : 103184669,
+      <span class="s2">"checked"</span> : 0,
+      <span class="s2">"is_archived"</span> : 0,
+      <span class="s2">"assigned_by_uid"</span> : 1,
+      <span class="s2">"priority"</span> : 1,
+      <span class="s2">"is_deleted"</span> : 0
+    <span class="o">}</span>
+  <span class="o">]</span>,
+  <span class="s2">"notes"</span> : <span class="o">[</span>
+    <span class="o">{</span>
+      <span class="s2">"project_id"</span> : 176637191,
+      <span class="s2">"content"</span> : <span class="s2">"Comment3"</span>,
+      <span class="s2">"posted_uid"</span> : 1,
+      <span class="s2">"file_attachment"</span> : null,
+      <span class="s2">"is_deleted"</span> : 0,
+      <span class="s2">"is_archived"</span> : 0,
+      <span class="s2">"id"</span> : 24124658,
+      <span class="s2">"posted"</span> : <span class="s2">"Fri 05 Aug 2016 11:47:58 +0000"</span>,
+      <span class="s2">"uids_to_notify"</span> : null,
+      <span class="s2">"item_id"</span> : 103184669
+    <span class="o">}</span>
+  <span class="o">]</span>,
+  <span class="s2">"reminders"</span> : <span class="o">[</span>
+    <span class="o">{</span>
+      <span class="s2">"mm_offset"</span> : 180,
+      <span class="s2">"due_date_utc"</span> : <span class="s2">"Mon 08 Aug 2016 07:45:00 +0000"</span>,
+      <span class="s2">"date_lang"</span> : <span class="s2">"en"</span>,
+      <span class="s2">"notify_uid"</span> : 1,
+      <span class="s2">"service"</span> : <span class="s2">"email"</span>,
+      <span class="s2">"is_deleted"</span> : 0,
+      <span class="s2">"type"</span> : <span class="s2">"absolute"</span>,
+      <span class="s2">"id"</span> : 29173254,
+      <span class="s2">"date_string"</span> : <span class="s2">"8 Aug 10:45 AM"</span>,
+      <span class="s2">"item_id"</span> : 103184669
+    <span class="o">}</span>
+  <span class="o">]</span>,
+  <span class="s2">"temp_id_mapping"</span> : <span class="o">{</span>
+    <span class="s2">"160070ed-79a9-4e6b-988b-169052e9ef22"</span> : 103184669,
+    <span class="s2">"cda5ffcd-5035-47d9-a683-5dddce096811"</span> : 29173254,
+    <span class="s2">"7f4de51a-3b12-4364-a98b-26f041293eba"</span> : 24124658,
+  <span class="o">}</span>,
+  <span class="s2">"sync_status"</span> : <span class="o">{</span>
+    <span class="s2">"cf6c3ef7-5579-40c2-87e1-b30a1f3cbefe"</span> : <span class="s2">"ok"</span>,
+    <span class="s2">"0d9a0925-067e-47fb-9a86-c0cf359afd9f"</span> : <span class="s2">"ok"</span>,
+    <span class="s2">"843a5719-b204-4f6e-9ff3-f55cb9140ba1"</span> : <span class="s2">"ok"</span>
+  <span class="o">}</span>,
+  <span class="s2">"full_sync"</span> : <span class="nb">false</span>,
+  <span class="s2">"sync_token"</span> : <span class="s2">"Fg9VYMugYcPg2PPLDQMyFuvI3XxeL3moh5NsrakQbhpU8ld0AdN6KbZJhwrz"</span>,
+<span class="o">}</span>
+</code></pre>
+<pre class="highlight shell"><code><span class="c"># RESTful</span>
+<span class="gp">$ </span>curl https://todoist.com/API/v7/items/add <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
+    -d <span class="nv">project_id</span><span class="o">=</span>176637191 <span class="se">\</span>
+    -d <span class="nv">content</span><span class="o">=</span>Task3 <span class="se">\</span>
+    -d <span class="nv">date_string</span><span class="o">=</span><span class="s2">"Monday 11am"</span>
+<span class="gp">$ </span>curl https://todoist.com/API/v7/notes/add <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
+    -d <span class="nv">item_id</span><span class="o">=</span>103184669 <span class="se">\</span>
+    -d <span class="nv">content</span><span class="o">=</span>Comment3
+<span class="gp">$ </span>curl https://todoist.com/API/v7/reminders/add <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
+    -d <span class="nv">item_id</span><span class="o">=</span>103184669 <span class="se">\</span>
+    -d <span class="nv">date_string</span><span class="o">=</span><span class="s2">"Monday 10:45am"</span>
+</code></pre>
+<pre class="highlight shell"><code><span class="c"># quick/add</span>
+<span class="gp">$ </span>curl https://todoist.com/API/v7/quick/add <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567
+    -d <span class="nv">content</span><span class="o">=</span><span class="s2">"Task3 Monday 11am"</span> <span class="se">\</span>
+    -d <span class="nv">note</span><span class="o">=</span><span class="s2">"Comment3"</span> <span class="se">\</span>
+    -d <span class="nv">reminder</span><span class="o">=</span><span class="s2">"Monday 10:45am"</span>
+</code></pre>
+<pre class="highlight python"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">task3</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">'Task3'</span><span class="p">,</span> <span class="n">project1</span><span class="p">[</span><span class="s">'id'</span><span class="p">],</span> <span class="n">date_string</span><span class="o">=</span><span class="s">'Monday 11am'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">comment3</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">task3</span><span class="p">[</span><span class="s">'id'</span><span class="p">],</span> <span class="s">'Comment3'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">reminder3</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">reminders</span><span class="p">(</span><span class="n">task3</span><span class="p">[</span><span class="s">'id'</span><span class="p">],</span> <span class="n">date_string</span><span class="o">=</span><span class="s">'Monday 10:45am'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">api</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="n">task3</span><span class="p">,</span> <span class="n">comment3</span><span class="p">,</span> <span class="n">reminder3</span><span class="p">)</span>
+<span class="p">(</span>
+  <span class="n">Item</span><span class="p">({</span>
+    <span class="s">'all_day'</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span>
+    <span class="s">'assigned_by_uid'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'checked'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'collapsed'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'content'</span><span class="p">:</span> <span class="s">'Task3'</span><span class="p">,</span>
+    <span class="s">'date_added'</span> <span class="p">:</span> <span class="s">'Fri 05 Aug 2016 11:47:58 +0000'</span><span class="p">,</span>
+    <span class="s">'date_lang'</span><span class="p">:</span> <span class="s">'en'</span><span class="p">,</span>
+    <span class="s">'date_string'</span><span class="p">:</span> <span class="s">'8 Aug 11:00 AM'</span><span class="p">,</span>
+    <span class="s">'day_order'</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="s">'due_date_utc'</span> <span class="p">:</span> <span class="s">'Mon 08 Aug 2016 08:00:00 +0000'</span><span class="p">,</span>
+    <span class="s">'id'</span> <span class="p">:</span> <span class="mi">103184669</span><span class="p">,</span>
+    <span class="s">'in_history'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'indent'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'is_archived'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'is_deleted'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'item_order'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'labels'</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="s">'priority'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'project_id'</span> <span class="p">:</span> <span class="mi">176637191</span><span class="p">,</span>
+    <span class="s">'responsible_uid'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+    <span class="s">'sync_id'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+    <span class="s">'user_id'</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="p">}),</span>
+  <span class="n">Note</span><span class="p">({</span>
+    <span class="s">'content'</span><span class="p">:</span> <span class="s">'Comment3'</span><span class="p">,</span>
+    <span class="s">'file_attachment'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+    <span class="s">'id'</span> <span class="p">:</span> <span class="mi">24124658</span><span class="p">,</span>
+    <span class="s">'is_archived'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'is_deleted'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'item_id'</span><span class="p">:</span> <span class="mi">103184669</span><span class="p">,</span>
+    <span class="s">'posted'</span> <span class="p">:</span> <span class="s">'Fri 05 Aug 2016 11:47:58 +0000'</span><span class="p">,</span>
+    <span class="s">'posted_uid'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'project_id'</span> <span class="p">:</span> <span class="mi">176637191</span><span class="p">,</span>
+    <span class="s">'uids_to_notify'</span><span class="p">:</span> <span class="bp">None</span>
+  <span class="p">}),</span>
+  <span class="n">Reminder</span><span class="p">({</span>
+    <span class="s">'date_lang'</span><span class="p">:</span> <span class="s">'en'</span><span class="p">,</span>
+    <span class="s">'date_string'</span><span class="p">:</span> <span class="s">'8 Aug 10:45 AM'</span><span class="p">,</span>
+    <span class="s">'due_date_utc'</span><span class="p">:</span> <span class="s">'Mon 08 Aug 2016 07:45:00 +0000'</span>
+    <span class="s">'id'</span> <span class="p">:</span> <span class="mi">29173254</span><span class="p">,</span>
+    <span class="s">'is_deleted'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s">'item_id'</span><span class="p">:</span> <span class="mi">103184669</span><span class="p">,</span>
+    <span class="s">'mm_offset'</span><span class="p">:</span> <span class="mi">180</span><span class="p">,</span>
+    <span class="s">'notify_uid'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'service'</span><span class="p">:</span> <span class="s">'email'</span><span class="p">,</span>
+    <span class="s">'type'</span><span class="p">:</span> <span class="s">'absolute'</span>
+  <span class="p">})</span>
+<span class="p">)</span>
+</code></pre>
+
+<p>Let&rsquo;s complete the task we updated in the previous step, and delete the task we created earlier.</p>
+<h4 id='when-using-curl-through-the-shell-'>When using curl through the shell&hellip;</h4>
+<p>We use again the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
+
+<ul>
+<li>The user&rsquo;s API token same as on the previous requests.</li>
+<li>The sync token that we received as reply on our previous request.</li>
+<li>For this example lets get back items, notes and reminders, changed since last sync, so we set <code class="prettyprint">resource_items=&#39;[&quot;items&quot;, &quot;notes&quot;, &quot;reminders&quot;]&#39;</code>.</li>
+<li>We send an <code class="prettyprint">item_add</code> command that will add the new task, a <code class="prettyprint">note_add</code> command that will add a note to the new task, and we do that by specifying the <code class="prettyprint">temp_id</code> of the new task as the <code class="prettyprint">item_id</code> for the <code class="prettyprint">note_add</code> command , and a <code class="prettyprint">reminder_add</code> command that will create a reminder for our task, again using the <code class="prettyprint">temp_id</code> of the task as the <code class="prettyprint">item_id</code> of the <code class="prettyprint">reminder_add</code> command.</li>
+<li>We also need to specify the <code class="prettyprint">uuid</code> for all commands.</li>
+</ul>
+
+<p>In the results we get back, we notice the following:</p>
+
+<ul>
+<li>The updates to all items, notes and reminders, since our last sync are returned as part of the user&rsquo;s <code class="prettyprint">items</code>, <code class="prettyprint">notes</code> and <code class="prettyprint">reminders</code> arrays, and we can observe the new task, and the note and reminder that it has.</li>
+<li>The <code class="prettyprint">temp_id_mapping</code> here contains the real IDs of the task, note and reminder.</li>
+<li>The <code class="prettyprint">sync_status</code> object which tells us again whether our commands were successful.</li>
+<li>The special flag <code class="prettyprint">full_sync</code> which is set to <code class="prettyprint">false</code> here, and denotes we did an incremental sync.</li>
+<li>A new <code class="prettyprint">sync_token</code> which we can use later on to do more incremental syncs.</li>
+</ul>
+<h4 id='when-using-the-python-library-'>When using the python library&hellip;</h4>
+<p>We call the <code class="prettyprint">api.items.add()</code> method to create the new task. and we store the object in the <code class="prettyprint">task3</code> variable, which we use to specify the <code class="prettyprint">task3[&#39;id&#39;]</code> argument for the <code class="prettyprint">api.notes.add()</code> and <code class="prettyprint">api.reminders.add()</code> methods that create the <code class="prettyprint">comment3</code> note and <code class="prettyprint">reminder3</code> reminder respectively.</p>
+
+<p>Again, in order to actually create all the objects on the server, we do an <code class="prettyprint">api.commit()</code> call.</p>
+
+<p>Finally we print the <code class="prettyprint">task3</code>, <code class="prettyprint">comment3</code> and <code class="prettyprint">reminder3</code> objects.</p>
 
         <h1 id='authorization'>Authorization</h1>
 <p>In order to make authorized calls to Todoist APIs, your application must first obtain an access token from the users. This section describes the different ways of obtaining such a token.</p>
@@ -749,6 +1190,400 @@ https://todoist.com/api/access_tokens/migrate_personal_token
 <code class="prettyprint">
 {&quot;access_token&quot;: &quot;....&quot;, &quot;token_type&quot;: &quot;Bearer&quot;}
 </code></p>
+
+        <h1 id='sync'>Sync</h1>
+<p>Todoist API (also known as the &ldquo;Sync API&rdquo;) is specially designed for efficient data sync between
+clients (e.g. our mobile apps) and Todoist.</p>
+
+<p>All Sync API requests share the same endpoint URL:
+<strong>https://todoist.com/API/v7/sync</strong></p>
+
+<p>Sync API requests should be made in HTTP POST (application/x-www-form-urlencoded). Sync API responses, including errors, will be returned in JSON.</p>
+
+<p>Sync API supports the following features:</p>
+
+<ul>
+<li><p>Batching: reading and writing of multiple resources can be done in a single HTTP request. Batch requests help clients reduce the number of network calls needed to sync resources.</p></li>
+<li><p>Incremental sync: You only retrieve data that are updated since the last time you performed a sync request.</p></li>
+</ul>
+<h2 id='read-resources'>Read resources</h2>
+<blockquote>
+<p>An example response of a read request.</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">$ </span>curl https://todoist.com/API/v7/sync <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
+    -d <span class="nv">sync_token</span><span class="o">=</span><span class="s1">'*'</span> <span class="se">\</span>
+    -d <span class="nv">resource_types</span><span class="o">=</span><span class="s1">'["all"]'</span>
+
+<span class="o">{</span>
+  <span class="s2">"collaborators"</span>: <span class="o">[</span> ... <span class="o">]</span>,
+  <span class="s2">"collaborator_states"</span>: <span class="o">[</span> ... <span class="o">]</span>,
+  <span class="s2">"day_orders"</span>: <span class="o">{</span> ... <span class="o">}</span>,
+  <span class="s2">"day_orders_timestamp"</span>: <span class="s2">"1344642991.1"</span>,
+  <span class="s2">"filters"</span>: <span class="o">[</span> ... <span class="o">]</span>,
+  <span class="s2">"full_sync"</span> : <span class="nb">true</span>,
+  <span class="s2">"items"</span>: <span class="o">[</span> ... <span class="o">]</span>,
+  <span class="s2">"labels"</span>: <span class="o">[</span> ... <span class="o">]</span>,
+  <span class="s2">"live_notifications"</span>: <span class="o">[</span> ... <span class="o">]</span>,
+  <span class="s2">"live_notifications_last_read_id"</span>: 0,
+  <span class="s2">"notes"</span>: <span class="o">[</span> ... <span class="o">]</span>,
+  <span class="s2">"project_notes"</span>: <span class="o">[</span> ... <span class="o">]</span>,
+  <span class="s2">"projects"</span>: <span class="o">[</span> ... <span class="o">]</span>,
+  <span class="s2">"reminders"</span>: <span class="o">[</span> ... <span class="o">]</span>,
+  <span class="s1">'settings_notifications: { ... },
+  "sync_token": "JLlaPv840mDQK4PLl6-hmjYMbP2h_RHsfPmIXuqmJI_zRiQHFww9olfDvSSpw74nrdvS",
+  "temp_id_mapping": { ... },
+  "user": { ... }
+}
+</span></code></pre>
+<pre class="highlight python"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">todoist</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">api</span> <span class="o">=</span> <span class="n">todoist</span><span class="o">.</span><span class="n">TodoistAPI</span><span class="p">(</span><span class="s">'0123456789abcdef0123456789abcdef01234567'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">api</span><span class="o">.</span><span class="n">sync</span><span class="p">(</span><span class="n">resource_types</span><span class="o">=</span><span class="p">[</span><span class="s">'all'</span><span class="p">])</span>
+<span class="p">{</span>
+  <span class="s">'collaborators'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
+  <span class="s">'collaborator_states'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
+  <span class="s">'day_orders'</span><span class="p">:</span> <span class="p">{</span> <span class="o">...</span> <span class="p">},</span>
+  <span class="s">'day_orders_timestamp'</span><span class="p">:</span> <span class="s">'1344642991.1'</span><span class="p">,</span>
+  <span class="s">'filters'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
+  <span class="s">'full_sync'</span> <span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+  <span class="s">'items'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
+  <span class="s">'labels'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
+  <span class="s">'live_notifications'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
+  <span class="s">'live_notifications_last_read_id'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+  <span class="s">'notes'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
+  <span class="s">'project_notes'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
+  <span class="s">'projects'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
+  <span class="s">'reminders'</span><span class="p">:</span> <span class="p">[</span> <span class="o">...</span> <span class="p">],</span>
+  <span class="s">'settings_notifications: { ... },</span><span class="err">
+</span><span class="s">  '</span><span class="n">sync_token</span><span class="s">': '</span><span class="n">JLlaPv840mDQK4PLl6</span><span class="o">-</span><span class="n">hmjYMbP2h_RHsfPmIXuqmJI_zRiQHFww9olfDvSSpw74nrdvS</span><span class="s">',</span><span class="err">
+</span><span class="s">  '</span><span class="n">temp_id_mapping</span><span class="s">': { ... },</span><span class="err">
+</span><span class="s">  '</span><span class="n">user</span><span class="s">': { ... }</span><span class="err">
+</span><span class="s">}</span><span class="err">
+</span></code></pre>
+
+<p>To retrieve your user resources, make a Sync API request with the following parameters:</p>
+<h3 id='required-parameters'>Required parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>token <em>String</em></td>
+<td>User&rsquo;s API token</td>
+</tr>
+<tr>
+<td>sync_token <em>String</em></td>
+<td>A special string, used to allow the client to perform incremental sync.  Pass <code class="prettyprint">*</code> to retrieve all active resource data.  More details about this below.</td>
+</tr>
+<tr>
+<td>resource_types <em>JSON array of strings</em></td>
+<td>Used to specify what resources to fetch from the server.  It should be a JSON-encoded array of strings. Here is a list of avaialbe resource types: <code class="prettyprint">labels</code>, <code class="prettyprint">projects</code>,<code class="prettyprint">items</code>, <code class="prettyprint">notes</code>, <code class="prettyprint">filters</code>, <code class="prettyprint">reminders</code>, <code class="prettyprint">locations</code>, <code class="prettyprint">user</code>, <code class="prettyprint">live_notifications</code>, <code class="prettyprint">collaborators</code>, <code class="prettyprint">notification_settings</code>. You may use <code class="prettyprint">all</code> to include all the resource types.</td>
+</tr>
+</tbody></table>
+<h3 id='optional-parameters'>Optional parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>day_orders_timestamp</td>
+<td>The Sync API requests return <code class="prettyprint">day_orders_timestamp</code> that specifies when the day orders were last updated. If you omit <code class="prettyprint">day_orders_timestamp</code> then none of them will be fetched. If you specify <code class="prettyprint">day_orders_timestamp</code> then day orders will be returned if your timestamp is different from the servers. If you send <code class="prettyprint">day_orders_timestamp</code> and the day orders have not been updated then the server won&rsquo;t return the <code class="prettyprint">day_orders</code> entry at all.</td>
+</tr>
+</tbody></table>
+<h3 id='incremental-sync'>Incremental sync</h3>
+<p>The Sync API allows clients to retrieve only updated resources, and this is done by using the &ldquo;synchronization token&rdquo;, <code class="prettyprint">sync_token</code>, in your Sync API request.</p>
+
+<p>On your initial sync request, specify <code class="prettyprint">synt_token=*</code> in your request, and all the user&rsquo;s active resource data will be returned.
+Todoist API server will also return a new <code class="prettyprint">sync_token</code> in the Sync API response.</p>
+
+<p>In your subsequent Sync request, use the <code class="prettyprint">sync_token</code> that you received from your previous sync response,
+and the Todoist API server will return only the updated resource data.</p>
+<h3 id='response'>Response</h3>
+<p>When the request succeeds, an HTTP 200 response will be returned with a JSON object containing the requested resources and also a new <code class="prettyprint">sync_token</code>.</p>
+
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>sync_token</td>
+<td>A new synchronization token. Used by the client in the next sync request to perform an incremental sync.</td>
+</tr>
+<tr>
+<td>full_sync</td>
+<td>Whether the response contains all data (a full synchronization) or just a part of them since the last sync.</td>
+</tr>
+<tr>
+<td>user</td>
+<td>A user object.</td>
+</tr>
+<tr>
+<td>projects</td>
+<td>An array of project objects.</td>
+</tr>
+<tr>
+<td>items</td>
+<td>A array of item objects.</td>
+</tr>
+<tr>
+<td>labels</td>
+<td>An array of label objects.</td>
+</tr>
+<tr>
+<td>filters</td>
+<td>A array of filter objects.</td>
+</tr>
+<tr>
+<td>day_orders</td>
+<td>A JSON object specifying the order of items in daily agenda. If <code class="prettyprint">day_orders_timestamp</code> is sent and day orders have not been updated then <code class="prettyprint">day_orders</code> won&rsquo;t be returned at all!</td>
+</tr>
+<tr>
+<td>day_orders_timestamp</td>
+<td>A string specifying when day orders were last updated. Use this to not fetch day orders on every request.</td>
+</tr>
+<tr>
+<td>reminders</td>
+<td>An array of reminder objects.</td>
+</tr>
+<tr>
+<td>collaborators</td>
+<td>A JSON object containing all collaborators for all shared projects. The <code class="prettyprint">projects</code> field contains the list of all shared projects, where the user acts as one of collaborators.</td>
+</tr>
+<tr>
+<td>collaborators_states</td>
+<td>An array specifying the state of each collaborator in each project. The state can be invited, active, inactive, deleted.</td>
+</tr>
+<tr>
+<td>live_notifications</td>
+<td>An array of live_notification objects</td>
+</tr>
+<tr>
+<td>live_notifications_last_read</td>
+<td>What is the last live notification the user has seen? This is used to implement unread notifications.</td>
+</tr>
+<tr>
+<td>settings_notifications</td>
+<td>User&rsquo;s notification setting, used by clients that support native notifications.</td>
+</tr>
+</tbody></table>
+<h2 id='write-resources'>Write resources</h2>
+<blockquote>
+<p>Example API call that creates a new project.</p>
+</blockquote>
+<pre class="highlight shell"><code><span class="gp">$ </span>curl https://todoist.com/API/v7/sync <span class="se">\</span>
+    -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
+    -d <span class="nv">commands</span><span class="o">=</span><span class="s1">'[{"type": "project_add", "temp_id": "381e601f-0ef3-4ed6-bf95-58f896d1a314", "uuid": "ed1ce597-e4c7-4a88-ba48-e048d827c067", "args": {"name": "Project1", "item_order": 1, "indent": 1, "color": 1}}]'</span>
+<span class="o">{</span>
+  <span class="s2">"sync_token"</span>: <span class="s2">"JLlaPv840mDQK4PLl6-hmjYMbP2h_RHsfPmIXuqmJI_zRiQHFww9olfDvSSpw74nrdvS"</span>,
+  <span class="s2">"sync_status"</span>: <span class="o">{</span><span class="s2">"ed1ce597-e4c7-4a88-ba48-e048d827c067"</span>: <span class="s2">"ok"</span><span class="o">}</span>,
+  <span class="s2">"temp_id_mapping"</span>: <span class="o">{</span><span class="s2">"381e601f-0ef3-4ed6-bf95-58f896d1a314"</span>: 128501470<span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+<pre class="highlight python"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">todoist</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">api</span> <span class="o">=</span> <span class="n">todoist</span><span class="o">.</span><span class="n">TodoistAPI</span><span class="p">(</span><span class="s">'0123456789abcdef0123456789abcdef01234567'</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">api</span><span class="o">.</span><span class="n">sync</span><span class="p">(</span><span class="n">commands</span><span class="o">=</span><span class="p">[{</span><span class="s">'type'</span><span class="p">:</span> <span class="s">'project_add'</span><span class="p">,</span> <span class="s">'temp_id'</span><span class="p">:</span> <span class="s">'381e601f-0ef3-4ed6-bf95-58f896d1a314'</span><span class="p">,</span> <span class="s">'uuid'</span><span class="p">:</span> <span class="s">'ed1ce597-e4c7-4a88-ba48-e048d827c067'</span><span class="p">,</span> <span class="s">'args'</span><span class="p">:</span> <span class="p">{</span><span class="s">'name'</span><span class="p">:</span> <span class="s">'Project1'</span><span class="p">,</span> <span class="s">'item_order'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">'indent'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">'color'</span><span class="p">:</span> <span class="mi">1</span><span class="p">}}]</span>
+<span class="p">{</span>
+  <span class="s">'sync_status'</span><span class="p">:</span> <span class="p">{</span><span class="s">'ed1ce597-e4c7-4a88-ba48-e048d827c067'</span><span class="p">:</span> <span class="s">'ok'</span><span class="p">},</span>
+  <span class="s">'temp_id_mapping'</span><span class="p">:</span> <span class="p">{</span><span class="s">'381e601f-0ef3-4ed6-bf95-58f896d1a314'</span><span class="p">:</span> <span class="mi">128501470</span><span class="p">},</span>
+  <span class="s">'sync_token'</span><span class="p">:</span> <span class="s">'JLlaPv840mDQK4PLl6-hmjYMbP2h_RHsfPmIXuqmJI_zRiQHFww9olfDvSSpw74nrdvS'</span>
+<span class="p">}</span>
+</code></pre>
+
+<p>To write to your user&rsquo;s Todoist resources, make a Sync API request with the following parameters</p>
+<h3 id='required-parameters'>Required parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>commands</td>
+<td>A JSON array of Command object. Each command will be processed in the specified order.</td>
+</tr>
+<tr>
+<td>token</td>
+<td>API token</td>
+</tr>
+</tbody></table>
+<h3 id='command-object'>Command object</h3>
+<table><thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>type <em>String</em></td>
+<td>The type of the command.</td>
+</tr>
+<tr>
+<td>args <em>Object</em></td>
+<td>The arguments of this specific command.</td>
+</tr>
+<tr>
+<td>uuid <em>String</em></td>
+<td>Command UUID. More details about this below.</td>
+</tr>
+<tr>
+<td>temp_id <em>String</em></td>
+<td>Temporary resource ID, Optional. Only specified for commands that create new resource (&ldquo;item_add&rdquo; command). More details about this below.</td>
+</tr>
+</tbody></table>
+<h2 id='command-uuid'>Command UUID</h2>
+<p>API clients should generate a unique string ID for each command and specify it in the <code class="prettyprint">uuid</code> field. The Command UUID will be used for two purposes:</p>
+
+<ol>
+<li><p>Command result mapping: Each command&rsquo;s result will be stored in the <code class="prettyprint">sync_status</code> field of the response JSON object. The <code class="prettyprint">sync_status</code> object has its key mapped to a command&rsquo;s <code class="prettyprint">uuid</code> and its value containing the result of
+a command.</p></li>
+<li><p>Command idempotency: Todoist will not execute command that has same UUID as the previously executed commands. This will allow clients to safely retry each command without accidentally performing the command twice.</p></li>
+</ol>
+<h2 id='temporary-resource-id'>Temporary resource id</h2>
+<blockquote>
+<p>An example that shows how temporary ids can be used and referenced:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w"> </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"project_add"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"temp_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"c7beb07f-b226-4eb1-bf63-30d782b07b1a"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Test Project"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"uuid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ac417051-1cdc-4dc3-b4f8-14526d5bfd16"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"item_add"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"temp_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"43f7ed23-a038-46b5-b2c9-4abda9097ffa"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"args"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="s2">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"This is a test task"</span><span class="p">,</span><span class="w">
+      </span><span class="s2">"project_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"c7beb07f-b226-4eb1-bf63-30d782b07b1a"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"uuid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"849fff4e-8551-4abb-bd2a-838d092775d7"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">]</span><span class="w">
+</span></code></pre>
+
+<blockquote>
+<p>You can see that the project_add command specified a temp_id property (&ldquo;c7beb07f-b226-4eb1-bf63-30d782b07b1a&rdquo;) as placeholder of the actual project_id. The item_add command can refrence to this temporary project id. The API will automatically resolve these ids.
+&ldquo;`</p>
+</blockquote>
+
+<p>Some commands depend on the result of previous command. For instance, you have a command sequence: <code class="prettyprint">&quot;project_add&quot;</code> and <code class="prettyprint">&quot;item_add&quot;</code> which first creates a project and then add a new task to the newly created project. In order to run the later <code class="prettyprint">item_add</code> command, we need to obtain the project ID returned from the previous command. Therefore, the normal approach would be to run these two commands in two separate HTTP requests.</p>
+
+<p>The temporary resource ID feature allows you to run two or more dependent commands in a single HTTP request.
+For commands that are related to creation of resources (i.e. <code class="prettyprint">item_add</code>, <code class="prettyprint">project_add</code>), you can
+specify an extra <code class="prettyprint">temp_id</code> as a placeholder for the actual ID of the resource. The other commands in
+the same sequence could directly refer to <code class="prettyprint">temp_id</code> if needed.</p>
+<h2 id='response--error'>Response / Error</h2>
+<p>The result of command executions will be stored in the following response JSON object field:</p>
+
+<table><thead>
+<tr>
+<th>Data</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>temp_id_mapping <em>Object</em></td>
+<td>A dictionary object that maps temporary resource ids to real resource ids.</td>
+</tr>
+<tr>
+<td>sync_status <em>Object</em></td>
+<td>A dictionary object containing result of each command execution. The key will be the command&rsquo;s <code class="prettyprint">uuid</code> field and the value will be the result status of the command execution.</td>
+</tr>
+</tbody></table>
+
+<blockquote>
+<p>An example of a single request sync return value:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"sync_status"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="s2">"863aca2c-65b4-480a-90ae-af160129abbd"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ok"</span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<blockquote>
+<p>An example of a multiple requests sync return value:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"sync_status"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"32eaa699-e9d7-47ed-91ea-e58d475791f1"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ok"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"bec5b356-3cc1-462a-9887-fe145e3e1ebf"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="s2">"error_code"</span><span class="p">:</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="s2">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Invalid temporary id"</span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<blockquote>
+<p>An example of a single request operating on multiple objects return value:</p>
+</blockquote>
+<pre class="highlight json"><code><span class="p">{</span><span class="w">
+  </span><span class="s2">"sync_status"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="s2">"66386321-fb87-4f95-9dfe-7bf5c3823e85"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"128501470"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ok"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"128501607"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="s2">"error_code"</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="s2">"error"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Project not found"</span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+
+<p>The status result of each command execution is in the <code class="prettyprint">sync_status</code> dictionary object. The key is a command <code class="prettyprint">uuid</code> and the value will be the result status of the command execution. There are two possible values for each command status -</p>
+
+<ul>
+<li><p>an &quot;ok&rdquo; string which signals success of the command</p></li>
+<li><p>an error object containings error information of a command.</p></li>
+</ul>
+
+<p>Please see the adjacent code examples for the possible format of the <code class="prettyprint">sync_status</code>.</p>
+<h2 id='response-status-codes'>Response status codes</h2>
+<p>The server uses the HTTP status codes to indicate the success or failure of a request. And as is customary in web servers, a 2xx code indicates - success, a 4xx code - an error due to incorrect user provided information, and a 5xx code - an internal, possibly temporary, error.</p>
+
+<table><thead>
+<tr>
+<th>Status code</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>200 OK</td>
+<td>The request was processed successfuly.</td>
+</tr>
+<tr>
+<td>400 Bad Request</td>
+<td>The request was incorrect.</td>
+</tr>
+<tr>
+<td>401 Unauthorized</td>
+<td>Authentication is required, and has failed, or has not yet been provided.</td>
+</tr>
+<tr>
+<td>403 Forbidden</td>
+<td>The request was valid, but for something that is forbidden.</td>
+</tr>
+<tr>
+<td>404 Not Found</td>
+<td>The requested resource could not be found.</td>
+</tr>
+<tr>
+<td>429 Too Many Requests</td>
+<td>The user has sent too many requests in a given amount of time.</td>
+</tr>
+<tr>
+<td>500 Internal Server Error</td>
+<td>The request failed due to a server error.</td>
+</tr>
+<tr>
+<td>503 Service Unavailable</td>
+<td>The server is currently unable to handle the request.</td>
+</tr>
+</tbody></table>
+<h2 id='limits'>Limits</h2>
+<p>The maximum number of commands is 100 per request, and this is done to prevent timeouts and other problems when dealing with big requests.</p>
+
+<p>There&rsquo;s also a maximum number of 50 sync requests per minute for each user, in order to prevent clients from accidentally overloading our servers.</p>
 
         <h1 id='projects'>Projects</h1>
 <blockquote>
