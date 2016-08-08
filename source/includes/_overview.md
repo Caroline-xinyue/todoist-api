@@ -18,7 +18,7 @@ The `Changelog` section is useful for those migrating from older versions of our
 The rest sections are the reference documentation of the different Todoist objects and endpoints, and you can continue reading them in the order you need them.
 
 
-## Client libraries and tools
+## Client libraries
 
 Currently there is official support in the form of a Python library, but soon more languages might follow.
 
