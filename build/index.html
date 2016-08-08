@@ -143,7 +143,7 @@ SOFTWARE.
 </ul>
 
         <h1 id='getting-started'>Getting started</h1>
-<p>In this section we will do some common things that many of our users ask for help on how to accomplish them.  We will mostly use the <code class="prettyprint">sync</code> call, which is described in detailed at the <code class="prettyprint">Sync</code> section, but for now you can just consider it just an endpoint, and you will soon figure some of the things it can do, just by having a look at some examples.</p>
+<p>In this section we will do some common things, that many of our users ask for help on accomplishing them.  We will mostly use the <code class="prettyprint">sync</code> call, which is described in detailed at the <code class="prettyprint">Sync</code> section, but for now you can just consider it just an endpoint, and you will soon figure some of the things it can do, just by having a look at some examples.</p>
 <h2 id='get-all-projects'>Get all projects</h2>
 <blockquote>
 <p>The example of how we get all projects:</p>
@@ -196,12 +196,12 @@ SOFTWARE.
 <span class="p">]</span>
 </code></pre>
 
-<p>Let&rsquo;s see first how we can get all projects a user has.</p>
+<p>First, let&rsquo;s see how we can get all projects a user has.</p>
 <h4 id='when-using-curl-through-the-shell-'>When using curl through the shell&hellip;</h4>
 <p>We send a request to the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
 
 <ul>
-<li>The user&rsquo;s API token which here is set to <code class="prettyprint">token=0123456789abcdef0123456789abcdef01234567</code>.</li>
+<li>The user&rsquo;s API token, which here is set to <code class="prettyprint">token=0123456789abcdef0123456789abcdef01234567</code>.</li>
 <li>A special sync token, which denotes that we want a full sync, in contrast to an incremental sync, which is denoted with the <code class="prettyprint">*</code> symbol, so we set <code class="prettyprint">sync_token=*</code>.</li>
 <li>That we want to get back only the <code class="prettyprint">projects</code>, and not any other data, so we set <code class="prettyprint">resource_items=&#39;[&quot;projects&quot;]&#39;</code>.</li>
 </ul>
@@ -211,13 +211,13 @@ SOFTWARE.
 <ul>
 <li>All the user&rsquo;s projects, which in in this case it&rsquo;s only the <code class="prettyprint">Inbox</code> project.</li>
 <li>A special flag <code class="prettyprint">full_sync</code> which is set to <code class="prettyprint">true</code> here, and denotes we did a full sync.</li>
-<li>A new <code class="prettyprint">sync_token</code> which we can use later on to do incremental syncs.</li>
+<li>A new <code class="prettyprint">sync_token</code> which we can use later on, in order to do incremental syncs.</li>
 <li>The <code class="prettyprint">temp_id_mapping</code> object which will be explained later on, and which it&rsquo;s empty now.</li>
 </ul>
 <h4 id='when-using-the-python-library-'>When using the python library&hellip;</h4>
 <p>We need to import the <code class="prettyprint">TodoistAPI</code> class from the <code class="prettyprint">todoist</code> module, create a <code class="prettyprint">TodoistAPI</code> object which we store to the <code class="prettyprint">api</code> variable, and specify our user API <code class="prettyprint">token</code>, that is <code class="prettyprint">0123456789abcdef0123456789abcdef01234567</code>.</p>
 
-<p>After that we can just do a sync by calling <code class="prettyprint">api.sync()</code>, and we can access the user&rsquo;s project through the <code class="prettyprint">api.state</code> object, so for projects that is <code class="prettyprint">api.state[&#39;projects&#39;]</code>.</p>
+<p>After that we can just do a sync by calling <code class="prettyprint">api.sync()</code>, and we can access the user&rsquo;s projects through the <code class="prettyprint">api.state</code> object, so for projects that is <code class="prettyprint">api.state[&#39;projects&#39;]</code>.</p>
 <h2 id='add-a-new-project'>Add a new project</h2>
 <blockquote>
 <p>The example of how we create a new project:</p>
@@ -278,29 +278,29 @@ SOFTWARE.
 
 <p>Let&rsquo;s create a new project, and observe the result of our action.</p>
 <h4 id='when-using-curl-through-the-shell-'>When using curl through the shell&hellip;</h4>
-<p>We use again the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
+<p>We use the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
 
 <ul>
-<li>The user&rsquo;s API token which is again set to <code class="prettyprint">token=0123456789abcdef0123456789abcdef01234567</code>.</li>
+<li>The user&rsquo;s API token which is set to <code class="prettyprint">token=0123456789abcdef0123456789abcdef01234567</code>.</li>
 <li>The sync token that we received on the reply of our previous request, and which denotes that we want an incremental sync, so we set <code class="prettyprint">sync_token=&quot;aLGJg_2qwBE_kE3j9_Gn6uoKQtvQeyjm7UEz_aVwF8KdriDxw7e_InFZK61h&quot;</code>.</li>
-<li>That we again want to get back only the <code class="prettyprint">projects</code>, and not any other data, so we set <code class="prettyprint">resource_items=&#39;[&quot;projects&quot;]&#39;</code>.</li>
+<li>That we want to get back only the <code class="prettyprint">projects</code>, and not any other data, so we set <code class="prettyprint">resource_items=&#39;[&quot;projects&quot;]&#39;</code>.</li>
 <li>We send a single <code class="prettyprint">project_add</code> command that will create a new project, and we specify as the only argument to that command the <code class="prettyprint">name</code> of the project which is set to <code class="prettyprint">Project1</code>.</li>
-<li>We also need to specify 2 UUIDs, one is the <code class="prettyprint">uuid</code> that that will uniquely identify our command, and one for the <code class="prettyprint">temp_id</code> which is a temporary ID we set to our new project, and we can use that later on to identify it to the server without a need to know its real ID that is assigned at the time of creation.</li>
+<li>We also need to specify 2 UUIDs: the <code class="prettyprint">uuid</code> that that will uniquely identify our command, and the <code class="prettyprint">temp_id</code> which is a temporary ID we set to our new project, and we can use that later on to identify it to the server, without a need to know its real ID, which is assigned at the time of creation on the server.</li>
 </ul>
 
 <p>In the results we get back, we notice the following data:</p>
 
 <ul>
 <li>The new project we added is returned as part of the user&rsquo;s <code class="prettyprint">projects</code>.</li>
-<li>The <code class="prettyprint">temp_id_mapping</code> object which tells us that the new object with UUID <code class="prettyprint">24a193a7-46f7-4314-b984-27b707bd2331</code> has a real ID <code class="prettyprint">176637191</code>, and we can use both of these IDs to refer to that project, and while the latter should be used whenever possible, the former can be also utilized on a temporary basis.</li>
+<li>The <code class="prettyprint">temp_id_mapping</code> object which tells us that the new object with UUID <code class="prettyprint">24a193a7-46f7-4314-b984-27b707bd2331</code> has a real ID <code class="prettyprint">176637191</code>. Notice that we can use both of these IDs to refer to that project, and while the latter should be used whenever possible, the former can be also utilized on a temporary basis.</li>
 <li>The <code class="prettyprint">sync_status</code> object which tells us whether our command with UUID <code class="prettyprint">e23db5ec-2f73-478a-a008-1cb4178d2fd1</code> was succesful, or in case of error what exactly was the problem.</li>
 <li>The special flag <code class="prettyprint">full_sync</code> which is set to <code class="prettyprint">false</code> here, and denotes we did an incremental sync.</li>
 <li>A new <code class="prettyprint">sync_token</code> which we can use later on to continue doing incremental syncs.</li>
 </ul>
 <h4 id='when-using-the-python-library-'>When using the python library&hellip;</h4>
-<p>We call the <code class="prettyprint">api.projects.add()</code> call, supplying the name of the new project, and as a return value we get a new project object.  This object holds this new project, and which we store in the <code class="prettyprint">project1</code> variable.</p>
+<p>We call the <code class="prettyprint">api.projects.add()</code> call, supplying the name of the new project, and as a return value we get a new project object.  This object holds the newly created project, and we store it in the <code class="prettyprint">project1</code> variable.</p>
 
-<p>This object is only temporary, and only exists on our local state, so in order to ask the server to add it remotely on the system, too, we use the <code class="prettyprint">api.commit()</code> call, which does all the work of sending a request to add the project, and get back the new project&rsquo;s properties.</p>
+<p>This object is only temporary, it only exists on our local state, so in order to ask the server to add it remotely on the system, too, we use the <code class="prettyprint">api.commit()</code> call, which does all the work of sending the request to add the project, and getting back the new project&rsquo;s properties.</p>
 
 <p>Finally we print the new <code class="prettyprint">project1</code> object.</p>
 <h2 id='add-two-new-tasks'>Add two new tasks</h2>
@@ -455,13 +455,13 @@ SOFTWARE.
 
 <p>Let&rsquo;s create two new tasks in one go, and observe the result of our action.</p>
 <h4 id='when-using-curl-through-the-shell-'>When using curl through the shell&hellip;</h4>
-<p>We use again the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
+<p>We use the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
 
 <ul>
-<li>The user&rsquo;s API token same as on the previous requests.</li>
+<li>The user&rsquo;s API token, same as on the previous requests.</li>
 <li>The sync token that we received as reply on our previous request.</li>
-<li>For this example lets get back both projects and items changed since last sync, so we set <code class="prettyprint">resource_items=&#39;[&quot;projects&quot;, &quot;items&quot;]&#39;</code>.</li>
-<li>We send two <code class="prettyprint">item_add</code> commands that will create a new task each, and we also specify the <code class="prettyprint">project_id</code> and the <code class="prettyprint">content</code> of each new task, and for one of the tasks we use the <code class="prettyprint">temp_id</code> of the previously created project to denote the <code class="prettyprint">project_id</code>, while for the other task we use the project&rsquo;s real ID, and we do that just to show that it has the same result.</li>
+<li>For this example we get back both projects and items changed since last sync, so we set <code class="prettyprint">resource_items=&#39;[&quot;projects&quot;, &quot;items&quot;]&#39;</code>.</li>
+<li>We send two <code class="prettyprint">item_add</code> commands that will create a new task each, and we also specify the <code class="prettyprint">project_id</code> and the <code class="prettyprint">content</code> of each new task, and for one of the tasks we use the <code class="prettyprint">temp_id</code> of the previously created project, while for the other task we use the project&rsquo;s real ID, and we do that just to show that it has the same result.</li>
 <li>We also need to specify the <code class="prettyprint">uuid</code> and <code class="prettyprint">temp_id</code>, for the two commands and the two new tasks respectively.</li>
 </ul>
 
@@ -470,15 +470,15 @@ SOFTWARE.
 <ul>
 <li>An empty <code class="prettyprint">projects</code> array, which is expected as no new projects were added by our commands.</li>
 <li>The new tasks we added are returned as part of the user&rsquo;s <code class="prettyprint">items</code> array.</li>
-<li>The <code class="prettyprint">temp_id_mapping</code> object which tells us again that are the real IDs of the new tasks, and what were the <code class="prettyprint">temp_id</code>s we used.</li>
-<li>The <code class="prettyprint">sync_status</code> object which tells us again whether each command was successful.</li>
+<li>The <code class="prettyprint">temp_id_mapping</code> object which tells us the real IDs of the new tasks, for each of the <code class="prettyprint">temp_id</code>s we sent.</li>
+<li>The <code class="prettyprint">sync_status</code> object which tells us whether each command was successful.</li>
 <li>The special flag <code class="prettyprint">full_sync</code> which is set to <code class="prettyprint">false</code> here, and denotes we did an incremental sync.</li>
 <li>A new <code class="prettyprint">sync_token</code> which we can use later on to do more incremental syncs.</li>
 </ul>
 <h4 id='when-using-the-python-library-'>When using the python library&hellip;</h4>
-<p>We call the <code class="prettyprint">api.items.add()</code> call, supplying the content each new task and the project it should be added to, and as a return value we get a new item object, that holds the new task, and which we store to a variable.  Notice that we can get the project ID from the <code class="prettyprint">project1</code> object we created on the previous step, and specifically from the <code class="prettyprint">project1[&#39;id&#39;]</code> value.</p>
+<p>We call the <code class="prettyprint">api.items.add()</code> call, supplying the content of each new task and the project it should be added to, and as a return value we get a new item object, that holds the new task, and which we store to a variable.  Notice that we can get the project ID from the <code class="prettyprint">project1</code> object we created on the previous step, and specifically from the <code class="prettyprint">project1[&#39;id&#39;]</code> value.</p>
 
-<p>Again, in order to actually add the tasks on the server, we do an <code class="prettyprint">api.commit()</code> call, and so both item objects are populated with the properties these new tasks have.</p>
+<p>In order to actually add the tasks on the server, we do an <code class="prettyprint">api.commit()</code> call, and so both item objects are populated with the properties these new tasks have.</p>
 
 <p>Finally we print the new <code class="prettyprint">task1</code> and <code class="prettyprint">task2</code> objects.</p>
 <h2 id='update-the-content-and-due-date-of-a-task'>Update the content and due date of a task</h2>
@@ -568,13 +568,13 @@ SOFTWARE.
 
 <p>Let&rsquo;s update the content and due date of the first task we created in the previous step.</p>
 <h4 id='when-using-curl-through-the-shell-'>When using curl through the shell&hellip;</h4>
-<p>We use again the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
+<p>We use the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
 
 <ul>
 <li>The user&rsquo;s API token same as on the previous requests.</li>
 <li>The sync token that we received as reply on our previous request.</li>
-<li>For this example lets get back only items changed since last sync, so we set <code class="prettyprint">resource_items=&#39;[&quot;items&quot;]&#39;</code>.</li>
-<li>We send an <code class="prettyprint">item_update</code> command that will update the task we created earlier, so we specify the <code class="prettyprint">id</code> of the task, its new <code class="prettyprint">content</code>, and its new due date with <code class="prettyprint">date_string</code>.</li>
+<li>For this example lets get back only items changed since our last sync, so we set <code class="prettyprint">resource_items=&#39;[&quot;items&quot;]&#39;</code>.</li>
+<li>We send an <code class="prettyprint">item_update</code> command that will update the task we created earlier, so we specify the <code class="prettyprint">id</code> of the task, its new <code class="prettyprint">content</code>, and its new due date by setting the <code class="prettyprint">date_string</code> property.</li>
 <li>We also need to specify the <code class="prettyprint">uuid</code> for this command.</li>
 </ul>
 
@@ -583,16 +583,16 @@ SOFTWARE.
 <ul>
 <li>The updates to all items since our last sync are returned as part of the user&rsquo;s <code class="prettyprint">items</code> array.</li>
 <li>The <code class="prettyprint">temp_id_mapping</code> here is empty since no new object was created.</li>
-<li>The <code class="prettyprint">sync_status</code> object which tells us again whether our command was successful.</li>
+<li>The <code class="prettyprint">sync_status</code> object which tells us whether our command was successful.</li>
 <li>The special flag <code class="prettyprint">full_sync</code> which is set to <code class="prettyprint">false</code> here, and denotes we did an incremental sync.</li>
 <li>A new <code class="prettyprint">sync_token</code> which we can use later on to do more incremental syncs.</li>
 </ul>
 <h4 id='when-using-the-python-library-'>When using the python library&hellip;</h4>
-<p>We call the <code class="prettyprint">update()</code> call on the <code class="prettyprint">task1</code> object that we got in the previous step, so we call <code class="prettyprint">task1.update()</code>, and we specify the new <code class="prettyprint">content=NewTask1</code> and <code class="prettyprint">date_string=&#39;tomorrow at 10:00</code> parameters, in order to change the task&rsquo;s properties.</p>
+<p>We call the <code class="prettyprint">update()</code> call on the <code class="prettyprint">task1</code> object that we got in the previous step, so we call <code class="prettyprint">task1.update()</code>, and we specify the new <code class="prettyprint">content=NewTask1</code> and <code class="prettyprint">date_string=&#39;tomorrow at 10:00</code> parameters, in order to change these specific properties of the task.</p>
 
-<p>Again, in order to update the task on the server, we do an <code class="prettyprint">api.commit()</code> call.</p>
+<p>In order to update the task on the server, we do an <code class="prettyprint">api.commit()</code> call.</p>
 
-<p>Finally we print again the <code class="prettyprint">task1</code> object, which has its properties updated.</p>
+<p>Finally we print the <code class="prettyprint">task1</code> object, which has now its properties automatically updated.</p>
 <h2 id='complete-a-task-and-delete-another-task'>Complete a task and delete another task</h2>
 <blockquote>
 <p>The example of how we complete a task an delete another task:</p>
@@ -735,29 +735,29 @@ SOFTWARE.
 
 <p>Let&rsquo;s complete the task we updated in the previous step, and delete the task we created earlier.</p>
 <h4 id='when-using-curl-through-the-shell-'>When using curl through the shell&hellip;</h4>
-<p>We use again the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
+<p>We use the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
 
 <ul>
 <li>The user&rsquo;s API token same as on the previous requests.</li>
 <li>The sync token that we received as reply on our previous request.</li>
 <li>For this example lets get back only items changed since last sync, so we set <code class="prettyprint">resource_items=&#39;[&quot;items&quot;]&#39;</code>.</li>
-<li>We send an <code class="prettyprint">item_complete</code> command that will completed the task, and we specify only the <code class="prettyprint">ids</code> parameter with the ID of the task, and also we send an <code class="prettyprint">item_delete</code> command that will delete the other task, and again it expects an <code class="prettyprint">ids</code> parameter.</li>
-<li>We also need to specify the <code class="prettyprint">uuid</code> for this command.</li>
+<li>We send an <code class="prettyprint">item_complete</code> command that will completed the task, and we specify only the <code class="prettyprint">ids</code> parameter with the ID of the task, and also we send an <code class="prettyprint">item_delete</code> command that will delete the other task, and this command also expects an <code class="prettyprint">ids</code> parameter.</li>
+<li>We also need to specify the <code class="prettyprint">uuid</code>s for these commands.</li>
 </ul>
 
 <p>In the results we get back, we notice the following:</p>
 
 <ul>
-<li>The updates to all items since our last sync are returned as part of the user&rsquo;s <code class="prettyprint">items</code> array, where we can observe that for the task we completed it has a <code class="prettyprint">checked=1</code> property which denotes it&rsquo;s now completed, while the other task has a <code class="prettyprint">is_deleted=1</code> property which denotes it&rsquo;s now deleted.</li>
+<li>The updates to all items since our last sync are returned as part of the user&rsquo;s <code class="prettyprint">items</code> array, where we can observe that the task we completed has a <code class="prettyprint">checked=1</code> property which denotes it&rsquo;s now completed, while the other task has a <code class="prettyprint">is_deleted=1</code> property which denotes it&rsquo;s now deleted.</li>
 <li>The <code class="prettyprint">temp_id_mapping</code> here is empty since no new object was created.</li>
-<li>The <code class="prettyprint">sync_status</code> object which tells us again whether our command was successful.</li>
+<li>The <code class="prettyprint">sync_status</code> object which tells us whether our command was successful.</li>
 <li>The special flag <code class="prettyprint">full_sync</code> which is set to <code class="prettyprint">false</code> here, and denotes we did an incremental sync.</li>
 <li>A new <code class="prettyprint">sync_token</code> which we can use later on to do more incremental syncs.</li>
 </ul>
 <h4 id='when-using-the-python-library-'>When using the python library&hellip;</h4>
 <p>We call the <code class="prettyprint">complete()</code> method on the <code class="prettyprint">task1</code> object that we have already stored from earlier, and also the <code class="prettyprint">delete()</code> method on the <code class="prettyprint">task2</code> object.</p>
 
-<p>Again, in order to actually completed and delete the tasks on the server, we do an <code class="prettyprint">api.commit()</code> call.</p>
+<p>In order to actually complete and delete the tasks on the server, we do an <code class="prettyprint">api.commit()</code> call.</p>
 
 <p>Finally we print the <code class="prettyprint">task1</code> and <code class="prettyprint">task2</code> objects, and we can observe that their <code class="prettyprint">checked=1</code> and <code class="prettyprint">is_deleted=1</code> properties have been set accordingly.</p>
 <h2 id='add-a-new-task-with-a-note-and-a-reminder'>Add a new task with a note and a reminder</h2>
@@ -930,31 +930,31 @@ SOFTWARE.
 <span class="p">)</span>
 </code></pre>
 
-<p>Let&rsquo;s complete the task we updated in the previous step, and delete the task we created earlier.</p>
+<p>Let&rsquo;s create a new task, but with add to it a new comment, and also set a reminder based on its due date.</p>
 <h4 id='when-using-curl-through-the-shell-'>When using curl through the shell&hellip;</h4>
-<p>We use again the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
+<p>We use the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
 
 <ul>
 <li>The user&rsquo;s API token same as on the previous requests.</li>
 <li>The sync token that we received as reply on our previous request.</li>
 <li>For this example lets get back items, notes and reminders, changed since last sync, so we set <code class="prettyprint">resource_items=&#39;[&quot;items&quot;, &quot;notes&quot;, &quot;reminders&quot;]&#39;</code>.</li>
-<li>We send an <code class="prettyprint">item_add</code> command that will add the new task, a <code class="prettyprint">note_add</code> command that will add a note to the new task, and we do that by specifying the <code class="prettyprint">temp_id</code> of the new task as the <code class="prettyprint">item_id</code> for the <code class="prettyprint">note_add</code> command , and a <code class="prettyprint">reminder_add</code> command that will create a reminder for our task, again using the <code class="prettyprint">temp_id</code> of the task as the <code class="prettyprint">item_id</code> of the <code class="prettyprint">reminder_add</code> command.</li>
+<li>We send an <code class="prettyprint">item_add</code> command that will add the new task, a <code class="prettyprint">note_add</code> command that will add a note to the new task, and we do that by specifying the <code class="prettyprint">temp_id</code> of the new task as the <code class="prettyprint">item_id</code> for the <code class="prettyprint">note_add</code> command, and a <code class="prettyprint">reminder_add</code> command that will create a reminder for our task, again using the <code class="prettyprint">temp_id</code> of the task as the <code class="prettyprint">item_id</code> of the <code class="prettyprint">reminder_add</code> command.</li>
 <li>We also need to specify the <code class="prettyprint">uuid</code> for all commands.</li>
 </ul>
 
 <p>In the results we get back, we notice the following:</p>
 
 <ul>
-<li>The updates to all items, notes and reminders, since our last sync are returned as part of the user&rsquo;s <code class="prettyprint">items</code>, <code class="prettyprint">notes</code> and <code class="prettyprint">reminders</code> arrays, and we can observe the new task, and the note and reminder that it has.</li>
+<li>The updates to all items, notes and reminders since our last sync, are returned as the equivalent arrays, and we can observe all three new objects created.</li>
 <li>The <code class="prettyprint">temp_id_mapping</code> here contains the real IDs of the task, note and reminder.</li>
-<li>The <code class="prettyprint">sync_status</code> object which tells us again whether our commands were successful.</li>
+<li>The <code class="prettyprint">sync_status</code> object which tells us whether our commands were successful.</li>
 <li>The special flag <code class="prettyprint">full_sync</code> which is set to <code class="prettyprint">false</code> here, and denotes we did an incremental sync.</li>
 <li>A new <code class="prettyprint">sync_token</code> which we can use later on to do more incremental syncs.</li>
 </ul>
 <h4 id='when-using-the-python-library-'>When using the python library&hellip;</h4>
-<p>We call the <code class="prettyprint">api.items.add()</code> method to create the new task. and we store the object in the <code class="prettyprint">task3</code> variable, which we use to specify the <code class="prettyprint">task3[&#39;id&#39;]</code> argument for the <code class="prettyprint">api.notes.add()</code> and <code class="prettyprint">api.reminders.add()</code> methods that create the <code class="prettyprint">comment3</code> note and <code class="prettyprint">reminder3</code> reminder respectively.</p>
+<p>We call the <code class="prettyprint">api.items.add()</code> method to create the new task. and we store the object in the <code class="prettyprint">task3</code> variable. We then use the value of <code class="prettyprint">task3[&#39;id&#39;]</code> as the argument to the <code class="prettyprint">api.notes.add()</code> and <code class="prettyprint">api.reminders.add()</code> methods that create the new note and reminder respectively. And we store the results to the <code class="prettyprint">comment3</code> and <code class="prettyprint">reminder3</code> variables.</p>
 
-<p>Again, in order to actually create all the objects on the server, we do an <code class="prettyprint">api.commit()</code> call.</p>
+<p>In order to actually create all the objects on the server, we do an <code class="prettyprint">api.commit()</code> call.</p>
 
 <p>Finally we print the <code class="prettyprint">task3</code>, <code class="prettyprint">comment3</code> and <code class="prettyprint">reminder3</code> objects.</p>
 
