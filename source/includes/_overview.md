@@ -20,7 +20,7 @@ The rest sections are the reference documentation of the different Todoist objec
 
 ## Client libraries and tools
 
-Currently there is official support in the form of a Python library, but soon more languages might follow.  There's also a repository with some API tools that might be useful to users.
+Currently there is official support in the form of a Python library, but soon more languages might follow.
 
 ### Python
 
@@ -35,12 +35,6 @@ You can find the [Python library source code](https://github.com/doist/todoist-p
 You can also read the [Python library documentation](http://todoist-python.readthedocs.org/en/latest/) online.
 
 Finally, there's also a [PyPI package](https://pypi.python.org/pypi/todoist-python) ready for you to install.
-
-### API tools
-
-You can find the [API tools](https://github.com/doist/todoist-api-tools) at its repository at Github.
-
-Examples of usage of the API tools can be found later on in this documentation.
 
 
 ## Migration guide
