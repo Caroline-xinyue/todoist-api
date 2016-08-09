@@ -4,7 +4,7 @@ Todoist API (also known as the "Sync API") is specially designed for efficient d
 clients (e.g. our mobile apps) and Todoist.
 
 All Sync API requests share the same endpoint URL:
-**https://todoist.com/API/v7/sync**
+**https://todoist.com/api/v7/sync**
 
 Sync API requests should be made in HTTP POST (application/x-www-form-urlencoded). Sync API responses, including errors, will be returned in JSON.
 
@@ -19,7 +19,7 @@ Sync API supports the following features:
 > An example response of a read request.
 
 ```shell
-$ curl https://todoist.com/API/v7/sync \
+$ curl https://todoist.com/api/v7/sync \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d sync_token='*' \
     -d resource_types='["all"]'
@@ -139,7 +139,7 @@ settings_notifications | User's notification setting, used by clients that suppo
 > Example API call that creates a new project.
 
 ```shell
-$ curl https://todoist.com/API/v7/sync \
+$ curl https://todoist.com/api/v7/sync \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d commands='[{"type": "project_add", "temp_id": "381e601f-0ef3-4ed6-bf95-58f896d1a314", "uuid": "ed1ce597-e4c7-4a88-ba48-e048d827c067", "args": {"name": "Project1", "item_order": 1, "indent": 1, "color": 1}}]'
 {

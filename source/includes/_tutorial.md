@@ -7,7 +7,7 @@ In this section we will do some common things, that many of our users ask for he
 > The example of how we get all projects:
 
 ```shell
-$ curl https://todoist.com/API/v7/sync \
+$ curl https://todoist.com/api/v7/sync \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d sync_token=* \
     -d resource_types='["projects"]'
@@ -34,7 +34,7 @@ $ curl https://todoist.com/API/v7/sync \
 
 ```shell
 # RESTful
-$ curl https://todoist.com/API/v7/projects/get_all \
+$ curl https://todoist.com/api/v7/projects/get_all \
     -d token=0123456789abcdef0123456789abcdef01234567
 ```
 
@@ -89,7 +89,7 @@ After that we can just do a sync by calling `api.sync()`, and we can access the 
 > The example of how we create a new project:
 
 ```shell
-$ curl https://todoist.com/API/v7/sync \
+$ curl https://todoist.com/api/v7/sync \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d sync_token="aLGJg_2qwBE_kE3j9_Gn6uoKQtvQeyjm7UEz_aVwF8KdriDxw7e_InFZK61h" \
     -d resource_types='["projects"]' \
@@ -126,7 +126,7 @@ $ curl https://todoist.com/API/v7/sync \
 
 ```shell
 # RESTful
-$ curl https://todoist.com/API/v7/projects/add \
+$ curl https://todoist.com/api/v7/projects/add \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d name="Project1"
 ```
@@ -180,7 +180,7 @@ Finally we print the new `project1` object.
 > The example of how we create two new tasks:
 
 ```shell
-$ curl https://todoist.com/API/v7/sync \
+$ curl https://todoist.com/api/v7/sync \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d sync_token="VRyFHr0Qo3Hr--pzINyT6nax4vW7X2YG5RQlw3lB-6eYOPbSZVJepa62EVhO" \
     -d resource_types='["projects", "items"]' \
@@ -262,11 +262,11 @@ $ curl https://todoist.com/API/v7/sync \
 
 ```shell
 # RESTful
-$ curl https://todoist.com/API/v7/items/add \
+$ curl https://todoist.com/api/v7/items/add \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d content="Task1" \
     -d project_id=176637191
-$ curl https://todoist.com/API/v7/items/add \
+$ curl https://todoist.com/api/v7/items/add \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d content="Task2" \
     -d project_id=176637191
@@ -364,7 +364,7 @@ Finally we print the new `task1` and `task2` objects.
 > The example of how we update the content and due date of a task:
 
 ```shell
-$ curl https://todoist.com/API/v7/sync \
+$ curl https://todoist.com/api/v7/sync \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d sync_token="Gm7DEx2RBn-mW9xGIJhAPOGRPWSlewfxGm0aY_W6IhThCp_8DDXmPU8ERu8u" \
     -d resource_types='["items"]' \
@@ -411,7 +411,7 @@ $ curl https://todoist.com/API/v7/sync \
 
 ```shell
 # RESTful
-$ curl https://todoist.com/API/v7/items/update \
+$ curl https://todoist.com/api/v7/items/update \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d id="102835615" \
     -d content="NewTask1" \
@@ -482,7 +482,7 @@ Finally we print the `task1` object, which has now its properties automatically 
 > The example of how we complete a task an delete another task:
 
 ```shell
-$ curl https://todoist.com/API/v7/sync \
+$ curl https://todoist.com/api/v7/sync \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d sync_token="Gm7DEx2RBn-mW9xGIJhAPOGRPWSlewfxGm0aY_W6IhThCp_8DDXmPU8ERu8u" \
     -d resource_types='["items"]' \
@@ -557,10 +557,10 @@ $ curl https://todoist.com/API/v7/sync \
 
 ```shell
 # RESTful
-$ curl https://todoist.com/API/v7/items/complete \
+$ curl https://todoist.com/api/v7/items/complete \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d ids='["102835615"]'
-$ curl https://todoist.com/API/v7/items/delete \
+$ curl https://todoist.com/api/v7/items/delete \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d ids='["102835617"]'
 ```
@@ -655,7 +655,7 @@ Finally we print the `task1` and `task2` objects, and we can observe that their 
 > The example of how we create a new task with a note and a reminder:
 
 ```shell
-$ curl https://todoist.com/API/v7/sync \
+$ curl https://todoist.com/api/v7/sync \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d sync_token="VRyFHr0Qo3Hr--pzINyT6nax4vW7X2YG5RQlw3lB-6eYOPbSZVJepa62EVhO" \
     -d resource_types='["projects", "items"]' \
@@ -745,16 +745,16 @@ $ curl https://todoist.com/API/v7/sync \
 
 ```shell
 # RESTful
-$ curl https://todoist.com/API/v7/items/add \
+$ curl https://todoist.com/api/v7/items/add \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d project_id=176637191 \
     -d content=Task3 \
     -d date_string="Monday 11am"
-$ curl https://todoist.com/API/v7/notes/add \
+$ curl https://todoist.com/api/v7/notes/add \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d item_id=103184669 \
     -d content=Comment3
-$ curl https://todoist.com/API/v7/reminders/add \
+$ curl https://todoist.com/api/v7/reminders/add \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d item_id=103184669 \
     -d date_string="Monday 10:45am"
@@ -762,7 +762,7 @@ $ curl https://todoist.com/API/v7/reminders/add \
 
 ```shell
 # quick/add
-$ curl https://todoist.com/API/v7/quick/add \
+$ curl https://todoist.com/api/v7/quick/add \
     -d token=0123456789abcdef0123456789abcdef01234567
     -d content="Task3 Monday 11am" \
     -d note="Comment3" \
