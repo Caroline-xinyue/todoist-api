@@ -10,7 +10,7 @@ In this section we will do some common things, that many of our users ask for he
 $ curl https://todoist.com/API/v7/sync \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d sync_token=* \
-    -d resource_items='["projects"]'
+    -d resource_types='["projects"]'
 {
    "projects" : [
       {
@@ -64,11 +64,11 @@ First, let's see how we can get all projects a user has.
 
 #### When using curl through the shell...
 
-We send a request to the `/API/v7/sync` endpoint, and then specify the following arguments:
+We send a request to the `sync` endpoint, and then specify the following arguments:
 
-- The user's API token, which here is set to `token=0123456789abcdef0123456789abcdef01234567`.
+- The user's API token, which here is set to `token=0123456789abcdef0123456789abcdef01234567`.  You can find out your token from the Todoist Web app, at `Todoist Settings -> Account -> API token`.
 - A special sync token, which denotes that we want a full sync, in contrast to an incremental sync, which is denoted with the `*` symbol, so we set `sync_token=*`.
-- That we want to get back only the `projects`, and not any other data, so we set `resource_items='["projects"]'`.
+- That we want to get back only the `projects`, and not any other data, so we set `resource_types='["projects"]'`.
 
 In the results we get back, we notice the following data:
 
@@ -92,7 +92,7 @@ After that we can just do a sync by calling `api.sync()`, and we can access the 
 $ curl https://todoist.com/API/v7/sync \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d sync_token="aLGJg_2qwBE_kE3j9_Gn6uoKQtvQeyjm7UEz_aVwF8KdriDxw7e_InFZK61h" \
-    -d resource_items='["projects"]' \
+    -d resource_types='["projects"]' \
     -d commands='[
         { "type": "project_add",
           "temp_id": "24a193a7-46f7-4314-b984-27b707bd2331",
@@ -151,13 +151,13 @@ Let's create a new project, and observe the result of our action.
 
 #### When using curl through the shell...
 
-We use the `/API/v7/sync` endpoint, and then specify the following arguments:
+We use the `sync` call, and then specify the following arguments:
 
 - The user's API token which is set to `token=0123456789abcdef0123456789abcdef01234567`.
 - The sync token that we received on the reply of our previous request, and which denotes that we want an incremental sync, so we set `sync_token="aLGJg_2qwBE_kE3j9_Gn6uoKQtvQeyjm7UEz_aVwF8KdriDxw7e_InFZK61h"`.
-- That we want to get back only the `projects`, and not any other data, so we set `resource_items='["projects"]'`.
+- That we want to get back only the `projects`, and not any other data, so we set `resource_types='["projects"]'`.
 - We send a single `project_add` command that will create a new project, and we specify as the only argument to that command the `name` of the project which is set to `Project1`.
-- We also need to specify 2 UUIDs: the `uuid` that that will uniquely identify our command, and the `temp_id` which is a temporary ID we set to our new project, and we can use that later on to identify it to the server, without a need to know its real ID, which is assigned at the time of creation on the server.
+- We also need to specify 2 UUIDs: the `uuid` that that will uniquely identify our command, and the `temp_id` which is a temporary ID we set to our new project, and we can use that later on to identify it to the server, without a need to know its real ID, which is assigned at the time of creation on the server.  Note that in these examples we're using UUID values, but you could also use a shorter strings containing letters and/or numbers, but you need to make sure they will be random and unique.
 
 In the results we get back, we notice the following data:
 
@@ -183,7 +183,7 @@ Finally we print the new `project1` object.
 $ curl https://todoist.com/API/v7/sync \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d sync_token="VRyFHr0Qo3Hr--pzINyT6nax4vW7X2YG5RQlw3lB-6eYOPbSZVJepa62EVhO" \
-    -d resource_items='["projects", "items"]' \
+    -d resource_types='["projects", "items"]' \
     -d commands='[
         { "type": "item_add",
           "temp_id": "fdef5d16-a40a-475e-bd4a-0ccbd6fd8c3f",
@@ -334,11 +334,11 @@ Let's create two new tasks in one go, and observe the result of our action.
 
 #### When using curl through the shell...
 
-We use the `/API/v7/sync` endpoint, and then specify the following arguments:
+We use the `sync` call, and then specify the following arguments:
 
 - The user's API token, same as on the previous requests.
 - The sync token that we received as reply on our previous request.
-- For this example we get back both projects and items changed since last sync, so we set `resource_items='["projects", "items"]'`.
+- For this example we get back both projects and items changed since last sync, so we set `resource_types='["projects", "items"]'`.
 - We send two `item_add` commands that will create a new task each, and we also specify the `project_id` and the `content` of each new task, and for one of the tasks we use the `temp_id` of the previously created project, while for the other task we use the project's real ID, and we do that just to show that it has the same result.
 - We also need to specify the `uuid` and `temp_id`, for the two commands and the two new tasks respectively.
 
@@ -367,7 +367,7 @@ Finally we print the new `task1` and `task2` objects.
 $ curl https://todoist.com/API/v7/sync \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d sync_token="Gm7DEx2RBn-mW9xGIJhAPOGRPWSlewfxGm0aY_W6IhThCp_8DDXmPU8ERu8u" \
-    -d resource_items='["items"]' \
+    -d resource_types='["items"]' \
     -d commands='[
         { "type": "item_update",
           "uuid": "aca17834-da6f-4605-bde0-bd10be228878",
@@ -453,11 +453,11 @@ Let's update the content and due date of the first task we created in the previo
 
 #### When using curl through the shell...
 
-We use the `/API/v7/sync` endpoint, and then specify the following arguments:
+We use the `sync` call, and then specify the following arguments:
 
 - The user's API token same as on the previous requests.
 - The sync token that we received as reply on our previous request.
-- For this example lets get back only items changed since our last sync, so we set `resource_items='["items"]'`.
+- For this example lets get back only items changed since our last sync, so we set `resource_types='["items"]'`.
 - We send an `item_update` command that will update the task we created earlier, so we specify the `id` of the task, its new `content`, and its new due date by setting the `date_string` property.
 - We also need to specify the `uuid` for this command.
 
@@ -485,7 +485,7 @@ Finally we print the `task1` object, which has now its properties automatically 
 $ curl https://todoist.com/API/v7/sync \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d sync_token="Gm7DEx2RBn-mW9xGIJhAPOGRPWSlewfxGm0aY_W6IhThCp_8DDXmPU8ERu8u" \
-    -d resource_items='["items"]' \
+    -d resource_types='["items"]' \
     -d commands='[
         { "type": "item_complete",
           "uuid": "7d9355c5-bd28-4d39-8b8b-0b7a7682eaa2",
@@ -626,11 +626,11 @@ Let's complete the task we updated in the previous step, and delete the task we 
 
 #### When using curl through the shell...
 
-We use the `/API/v7/sync` endpoint, and then specify the following arguments:
+We use the `sync` call, and then specify the following arguments:
 
 - The user's API token same as on the previous requests.
 - The sync token that we received as reply on our previous request.
-- For this example lets get back only items changed since last sync, so we set `resource_items='["items"]'`.
+- For this example lets get back only items changed since last sync, so we set `resource_types='["items"]'`.
 - We send an `item_complete` command that will completed the task, and we specify only the `ids` parameter with the ID of the task, and also we send an `item_delete` command that will delete the other task, and this command also expects an `ids` parameter.
 - We also need to specify the `uuid`s for these commands.
 
@@ -658,7 +658,7 @@ Finally we print the `task1` and `task2` objects, and we can observe that their 
 $ curl https://todoist.com/API/v7/sync \
     -d token=0123456789abcdef0123456789abcdef01234567 \
     -d sync_token="VRyFHr0Qo3Hr--pzINyT6nax4vW7X2YG5RQlw3lB-6eYOPbSZVJepa62EVhO" \
-    -d resource_items='["projects", "items"]' \
+    -d resource_types='["projects", "items"]' \
     -d commands='[
         { "type": "item_add",
           "temp_id": "160070ed-79a9-4e6b-988b-169052e9ef22",
@@ -831,11 +831,11 @@ Let's create a new task, but with add to it a new comment, and also set a remind
 
 #### When using curl through the shell...
 
-We use the `/API/v7/sync` endpoint, and then specify the following arguments:
+We use the `sync` call, and then specify the following arguments:
 
 - The user's API token same as on the previous requests.
 - The sync token that we received as reply on our previous request.
-- For this example lets get back items, notes and reminders, changed since last sync, so we set `resource_items='["items", "notes", "reminders"]'`.
+- For this example lets get back items, notes and reminders, changed since last sync, so we set `resource_types='["items", "notes", "reminders"]'`.
 - We send an `item_add` command that will add the new task, a `note_add` command that will add a note to the new task, and we do that by specifying the `temp_id` of the new task as the `item_id` for the `note_add` command, and a `reminder_add` command that will create a reminder for our task, again using the `temp_id` of the task as the `item_id` of the `reminder_add` command.
 - We also need to specify the `uuid` for all commands.
 

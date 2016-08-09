@@ -145,7 +145,7 @@ SOFTWARE.
 <pre class="highlight shell"><code><span class="gp">$ </span>curl https://todoist.com/API/v7/sync <span class="se">\</span>
     -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
     -d <span class="nv">sync_token</span><span class="o">=</span><span class="k">*</span> <span class="se">\</span>
-    -d <span class="nv">resource_items</span><span class="o">=</span><span class="s1">'["projects"]'</span>
+    -d <span class="nv">resource_types</span><span class="o">=</span><span class="s1">'["projects"]'</span>
 <span class="o">{</span>
    <span class="s2">"projects"</span> : <span class="o">[</span>
       <span class="o">{</span>
@@ -192,12 +192,12 @@ SOFTWARE.
 
 <p>First, let&rsquo;s see how we can get all projects a user has.</p>
 <h4 id='when-using-curl-through-the-shell-'>When using curl through the shell&hellip;</h4>
-<p>We send a request to the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
+<p>We send a request to the <code class="prettyprint">sync</code> endpoint, and then specify the following arguments:</p>
 
 <ul>
-<li>The user&rsquo;s API token, which here is set to <code class="prettyprint">token=0123456789abcdef0123456789abcdef01234567</code>.</li>
+<li>The user&rsquo;s API token, which here is set to <code class="prettyprint">token=0123456789abcdef0123456789abcdef01234567</code>.  You can find out your token from the Todoist Web app, at <code class="prettyprint">Todoist Settings -&gt; Account -&gt; API token</code>.</li>
 <li>A special sync token, which denotes that we want a full sync, in contrast to an incremental sync, which is denoted with the <code class="prettyprint">*</code> symbol, so we set <code class="prettyprint">sync_token=*</code>.</li>
-<li>That we want to get back only the <code class="prettyprint">projects</code>, and not any other data, so we set <code class="prettyprint">resource_items=&#39;[&quot;projects&quot;]&#39;</code>.</li>
+<li>That we want to get back only the <code class="prettyprint">projects</code>, and not any other data, so we set <code class="prettyprint">resource_types=&#39;[&quot;projects&quot;]&#39;</code>.</li>
 </ul>
 
 <p>In the results we get back, we notice the following data:</p>
@@ -219,7 +219,7 @@ SOFTWARE.
 <pre class="highlight shell"><code><span class="gp">$ </span>curl https://todoist.com/API/v7/sync <span class="se">\</span>
     -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
     -d <span class="nv">sync_token</span><span class="o">=</span><span class="s2">"aLGJg_2qwBE_kE3j9_Gn6uoKQtvQeyjm7UEz_aVwF8KdriDxw7e_InFZK61h"</span> <span class="se">\</span>
-    -d <span class="nv">resource_items</span><span class="o">=</span><span class="s1">'["projects"]'</span> <span class="se">\</span>
+    -d <span class="nv">resource_types</span><span class="o">=</span><span class="s1">'["projects"]'</span> <span class="se">\</span>
     -d <span class="nv">commands</span><span class="o">=</span><span class="s1">'[
         { "type": "project_add",
           "temp_id": "24a193a7-46f7-4314-b984-27b707bd2331",
@@ -272,14 +272,14 @@ SOFTWARE.
 
 <p>Let&rsquo;s create a new project, and observe the result of our action.</p>
 <h4 id='when-using-curl-through-the-shell-'>When using curl through the shell&hellip;</h4>
-<p>We use the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
+<p>We use the <code class="prettyprint">sync</code> call, and then specify the following arguments:</p>
 
 <ul>
 <li>The user&rsquo;s API token which is set to <code class="prettyprint">token=0123456789abcdef0123456789abcdef01234567</code>.</li>
 <li>The sync token that we received on the reply of our previous request, and which denotes that we want an incremental sync, so we set <code class="prettyprint">sync_token=&quot;aLGJg_2qwBE_kE3j9_Gn6uoKQtvQeyjm7UEz_aVwF8KdriDxw7e_InFZK61h&quot;</code>.</li>
-<li>That we want to get back only the <code class="prettyprint">projects</code>, and not any other data, so we set <code class="prettyprint">resource_items=&#39;[&quot;projects&quot;]&#39;</code>.</li>
+<li>That we want to get back only the <code class="prettyprint">projects</code>, and not any other data, so we set <code class="prettyprint">resource_types=&#39;[&quot;projects&quot;]&#39;</code>.</li>
 <li>We send a single <code class="prettyprint">project_add</code> command that will create a new project, and we specify as the only argument to that command the <code class="prettyprint">name</code> of the project which is set to <code class="prettyprint">Project1</code>.</li>
-<li>We also need to specify 2 UUIDs: the <code class="prettyprint">uuid</code> that that will uniquely identify our command, and the <code class="prettyprint">temp_id</code> which is a temporary ID we set to our new project, and we can use that later on to identify it to the server, without a need to know its real ID, which is assigned at the time of creation on the server.</li>
+<li>We also need to specify 2 UUIDs: the <code class="prettyprint">uuid</code> that that will uniquely identify our command, and the <code class="prettyprint">temp_id</code> which is a temporary ID we set to our new project, and we can use that later on to identify it to the server, without a need to know its real ID, which is assigned at the time of creation on the server.  Note that in these examples we&rsquo;re using UUID values, but you could also use a shorter strings containing letters and/or numbers, but you need to make sure they will be random and unique.</li>
 </ul>
 
 <p>In the results we get back, we notice the following data:</p>
@@ -304,7 +304,7 @@ SOFTWARE.
 <pre class="highlight shell"><code><span class="gp">$ </span>curl https://todoist.com/API/v7/sync <span class="se">\</span>
     -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
     -d <span class="nv">sync_token</span><span class="o">=</span><span class="s2">"VRyFHr0Qo3Hr--pzINyT6nax4vW7X2YG5RQlw3lB-6eYOPbSZVJepa62EVhO"</span> <span class="se">\</span>
-    -d <span class="nv">resource_items</span><span class="o">=</span><span class="s1">'["projects", "items"]'</span> <span class="se">\</span>
+    -d <span class="nv">resource_types</span><span class="o">=</span><span class="s1">'["projects", "items"]'</span> <span class="se">\</span>
     -d <span class="nv">commands</span><span class="o">=</span><span class="s1">'[
         { "type": "item_add",
           "temp_id": "fdef5d16-a40a-475e-bd4a-0ccbd6fd8c3f",
@@ -449,12 +449,12 @@ SOFTWARE.
 
 <p>Let&rsquo;s create two new tasks in one go, and observe the result of our action.</p>
 <h4 id='when-using-curl-through-the-shell-'>When using curl through the shell&hellip;</h4>
-<p>We use the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
+<p>We use the <code class="prettyprint">sync</code> call, and then specify the following arguments:</p>
 
 <ul>
 <li>The user&rsquo;s API token, same as on the previous requests.</li>
 <li>The sync token that we received as reply on our previous request.</li>
-<li>For this example we get back both projects and items changed since last sync, so we set <code class="prettyprint">resource_items=&#39;[&quot;projects&quot;, &quot;items&quot;]&#39;</code>.</li>
+<li>For this example we get back both projects and items changed since last sync, so we set <code class="prettyprint">resource_types=&#39;[&quot;projects&quot;, &quot;items&quot;]&#39;</code>.</li>
 <li>We send two <code class="prettyprint">item_add</code> commands that will create a new task each, and we also specify the <code class="prettyprint">project_id</code> and the <code class="prettyprint">content</code> of each new task, and for one of the tasks we use the <code class="prettyprint">temp_id</code> of the previously created project, while for the other task we use the project&rsquo;s real ID, and we do that just to show that it has the same result.</li>
 <li>We also need to specify the <code class="prettyprint">uuid</code> and <code class="prettyprint">temp_id</code>, for the two commands and the two new tasks respectively.</li>
 </ul>
@@ -482,7 +482,7 @@ SOFTWARE.
 <pre class="highlight shell"><code><span class="gp">$ </span>curl https://todoist.com/API/v7/sync <span class="se">\</span>
     -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
     -d <span class="nv">sync_token</span><span class="o">=</span><span class="s2">"Gm7DEx2RBn-mW9xGIJhAPOGRPWSlewfxGm0aY_W6IhThCp_8DDXmPU8ERu8u"</span> <span class="se">\</span>
-    -d <span class="nv">resource_items</span><span class="o">=</span><span class="s1">'["items"]'</span> <span class="se">\</span>
+    -d <span class="nv">resource_types</span><span class="o">=</span><span class="s1">'["items"]'</span> <span class="se">\</span>
     -d <span class="nv">commands</span><span class="o">=</span><span class="s1">'[
         { "type": "item_update",
           "uuid": "aca17834-da6f-4605-bde0-bd10be228878",
@@ -562,12 +562,12 @@ SOFTWARE.
 
 <p>Let&rsquo;s update the content and due date of the first task we created in the previous step.</p>
 <h4 id='when-using-curl-through-the-shell-'>When using curl through the shell&hellip;</h4>
-<p>We use the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
+<p>We use the <code class="prettyprint">sync</code> call, and then specify the following arguments:</p>
 
 <ul>
 <li>The user&rsquo;s API token same as on the previous requests.</li>
 <li>The sync token that we received as reply on our previous request.</li>
-<li>For this example lets get back only items changed since our last sync, so we set <code class="prettyprint">resource_items=&#39;[&quot;items&quot;]&#39;</code>.</li>
+<li>For this example lets get back only items changed since our last sync, so we set <code class="prettyprint">resource_types=&#39;[&quot;items&quot;]&#39;</code>.</li>
 <li>We send an <code class="prettyprint">item_update</code> command that will update the task we created earlier, so we specify the <code class="prettyprint">id</code> of the task, its new <code class="prettyprint">content</code>, and its new due date by setting the <code class="prettyprint">date_string</code> property.</li>
 <li>We also need to specify the <code class="prettyprint">uuid</code> for this command.</li>
 </ul>
@@ -594,7 +594,7 @@ SOFTWARE.
 <pre class="highlight shell"><code><span class="gp">$ </span>curl https://todoist.com/API/v7/sync <span class="se">\</span>
     -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
     -d <span class="nv">sync_token</span><span class="o">=</span><span class="s2">"Gm7DEx2RBn-mW9xGIJhAPOGRPWSlewfxGm0aY_W6IhThCp_8DDXmPU8ERu8u"</span> <span class="se">\</span>
-    -d <span class="nv">resource_items</span><span class="o">=</span><span class="s1">'["items"]'</span> <span class="se">\</span>
+    -d <span class="nv">resource_types</span><span class="o">=</span><span class="s1">'["items"]'</span> <span class="se">\</span>
     -d <span class="nv">commands</span><span class="o">=</span><span class="s1">'[
         { "type": "item_complete",
           "uuid": "7d9355c5-bd28-4d39-8b8b-0b7a7682eaa2",
@@ -729,12 +729,12 @@ SOFTWARE.
 
 <p>Let&rsquo;s complete the task we updated in the previous step, and delete the task we created earlier.</p>
 <h4 id='when-using-curl-through-the-shell-'>When using curl through the shell&hellip;</h4>
-<p>We use the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
+<p>We use the <code class="prettyprint">sync</code> call, and then specify the following arguments:</p>
 
 <ul>
 <li>The user&rsquo;s API token same as on the previous requests.</li>
 <li>The sync token that we received as reply on our previous request.</li>
-<li>For this example lets get back only items changed since last sync, so we set <code class="prettyprint">resource_items=&#39;[&quot;items&quot;]&#39;</code>.</li>
+<li>For this example lets get back only items changed since last sync, so we set <code class="prettyprint">resource_types=&#39;[&quot;items&quot;]&#39;</code>.</li>
 <li>We send an <code class="prettyprint">item_complete</code> command that will completed the task, and we specify only the <code class="prettyprint">ids</code> parameter with the ID of the task, and also we send an <code class="prettyprint">item_delete</code> command that will delete the other task, and this command also expects an <code class="prettyprint">ids</code> parameter.</li>
 <li>We also need to specify the <code class="prettyprint">uuid</code>s for these commands.</li>
 </ul>
@@ -761,7 +761,7 @@ SOFTWARE.
 <pre class="highlight shell"><code><span class="gp">$ </span>curl https://todoist.com/API/v7/sync <span class="se">\</span>
     -d <span class="nv">token</span><span class="o">=</span>0123456789abcdef0123456789abcdef01234567 <span class="se">\</span>
     -d <span class="nv">sync_token</span><span class="o">=</span><span class="s2">"VRyFHr0Qo3Hr--pzINyT6nax4vW7X2YG5RQlw3lB-6eYOPbSZVJepa62EVhO"</span> <span class="se">\</span>
-    -d <span class="nv">resource_items</span><span class="o">=</span><span class="s1">'["projects", "items"]'</span> <span class="se">\</span>
+    -d <span class="nv">resource_types</span><span class="o">=</span><span class="s1">'["projects", "items"]'</span> <span class="se">\</span>
     -d <span class="nv">commands</span><span class="o">=</span><span class="s1">'[
         { "type": "item_add",
           "temp_id": "160070ed-79a9-4e6b-988b-169052e9ef22",
@@ -926,12 +926,12 @@ SOFTWARE.
 
 <p>Let&rsquo;s create a new task, but with add to it a new comment, and also set a reminder based on its due date.</p>
 <h4 id='when-using-curl-through-the-shell-'>When using curl through the shell&hellip;</h4>
-<p>We use the <code class="prettyprint">/API/v7/sync</code> endpoint, and then specify the following arguments:</p>
+<p>We use the <code class="prettyprint">sync</code> call, and then specify the following arguments:</p>
 
 <ul>
 <li>The user&rsquo;s API token same as on the previous requests.</li>
 <li>The sync token that we received as reply on our previous request.</li>
-<li>For this example lets get back items, notes and reminders, changed since last sync, so we set <code class="prettyprint">resource_items=&#39;[&quot;items&quot;, &quot;notes&quot;, &quot;reminders&quot;]&#39;</code>.</li>
+<li>For this example lets get back items, notes and reminders, changed since last sync, so we set <code class="prettyprint">resource_types=&#39;[&quot;items&quot;, &quot;notes&quot;, &quot;reminders&quot;]&#39;</code>.</li>
 <li>We send an <code class="prettyprint">item_add</code> command that will add the new task, a <code class="prettyprint">note_add</code> command that will add a note to the new task, and we do that by specifying the <code class="prettyprint">temp_id</code> of the new task as the <code class="prettyprint">item_id</code> for the <code class="prettyprint">note_add</code> command, and a <code class="prettyprint">reminder_add</code> command that will create a reminder for our task, again using the <code class="prettyprint">temp_id</code> of the task as the <code class="prettyprint">item_id</code> of the <code class="prettyprint">reminder_add</code> command.</li>
 <li>We also need to specify the <code class="prettyprint">uuid</code> for all commands.</li>
 </ul>
