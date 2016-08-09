@@ -28,6 +28,7 @@ includes:
   - backups
   - urlschemes
   - webhooks
+  - changelog
 #  - query
 
 search: false

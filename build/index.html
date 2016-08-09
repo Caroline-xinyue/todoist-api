@@ -89,7 +89,7 @@ SOFTWARE.
         <h1 id='overview'>Overview</h1>
 <p>This is the official Todoist API documentation, a reference to the functionality our public API provides, with detailed description of each API endpoint, its parameters, and examples.</p>
 
-<p><strong>Note that documentation for the older <a href="https://developer.todoist.com/v6/">Todoist API v6</a> is still available, but we strongly recommend you use or migrate your code to the current version, as the v6 may be deprecated in the near future. You can find a changelog and migration guide at the end of this section.</strong></p>
+<p><strong>Note that documentation for the older <a href="https://developer.todoist.com/v6/">Todoist API v6</a> is still available, but we strongly recommend you use or migrate your code to the current version, as the v6 may be deprecated in the near future. You can find a changelog and migration guide at the last section of this documentation.</strong></p>
 <h2 id='summary-of-contents'>Summary of contents</h2>
 <p>In the <code class="prettyprint">Getting started</code> section we will try to present to you the Todoist API, in the simplest possible way, by using real examples, based on common tasks that many users want to accomplish.</p>
 
@@ -112,29 +112,6 @@ SOFTWARE.
 <p>You can also read the <a href="http://todoist-python.readthedocs.org/en/latest/">Python library documentation</a> online.</p>
 
 <p>Finally, there&rsquo;s also a <a href="https://pypi.python.org/pypi/todoist-python">PyPI package</a> ready for you to install.</p>
-<h2 id='migration-guide'>Migration guide</h2>
-<p>The new v7 Todoist API is still based on the original Todoist Sync API (as was the case for the v6 API), so the differences between the two APIs aren&rsquo;t as extended as those between the v5 and v6 APIs.</p>
-
-<p>In this section we document all the changes between the two different versions of our API, in order to make it easier to upgrade your client code.</p>
-
-<p>The main difference between the two APIs is that the <code class="prettyprint">seq_no</code>, ie. the sequence number which was basically an always increasing number, is not used anymore to implement the incremental sync functionality, but instead the <code class="prettyprint">sync_token</code> has been introduced, a string hash value.  So in order to do the initial full sync instead of <code class="prettyprint">seq_no=0</code>, one needs to send <code class="prettyprint">sync_token=*</code>.  Other than than, the last known value of <code class="prettyprint">sync_token</code> should be used in order to an incremental sync, similar to what was done before with the <code class="prettyprint">seq_no</code>.</p>
-
-<p>Here follows a list of various minor changes from the previous API version:</p>
-
-<ul>
-<li>The <code class="prettyprint">sync_token</code> value is not returned by the <code class="prettyprint">sync</code> call anymore, but the <code class="prettyprint">sync_token</code> and the <code class="prettyprint">full_sync</code> variables are returned instead.</li>
-<li>The <code class="prettyprint">sync</code> call now returns all objects in underscore naming convention, instead of CamelCase, so the <code class="prettyprint">Collaborators</code>, <code class="prettyprint">CollaboratorStates</code>, <code class="prettyprint">DayOrders</code>, <code class="prettyprint">DayOrdersTimestamp</code>, <code class="prettyprint">Filters</code>, <code class="prettyprint">Items</code>, <code class="prettyprint">Labels</code>, <code class="prettyprint">LiveNotifications</code>, <code class="prettyprint">LiveNotificationsLastRead</code>, <code class="prettyprint">Notes</code>, <code class="prettyprint">Projects</code>, <code class="prettyprint">Reminders</code>, <code class="prettyprint">SettingsNotifications</code>, <code class="prettyprint">SyncStatus</code>, <code class="prettyprint">TempIdMapping</code>, and <code class="prettyprint">User</code> objects, where renamed to <code class="prettyprint">collaborators</code>, <code class="prettyprint">collaborator_states</code>, <code class="prettyprint">day_orders</code>, <code class="prettyprint">day_orders_timestamp</code>, <code class="prettyprint">filters</code>, <code class="prettyprint">items</code>, <code class="prettyprint">labels</code>, <code class="prettyprint">live_notifications</code>, <code class="prettyprint">live_notifications_last_read</code>, <code class="prettyprint">notes</code>, <code class="prettyprint">projects</code>, <code class="prettyprint">reminders</code>, <code class="prettyprint">settings_notifications</code>, <code class="prettyprint">sync_status</code>, <code class="prettyprint">temp_id_mapping</code>, and <code class="prettyprint">user</code>, respectively</li>
-<li>The <code class="prettyprint">UserId</code> variable is not returned by the <code class="prettyprint">sync</code> call anymore.</li>
-<li>The <code class="prettyprint">timezone</code> and <code class="prettyprint">tz_offset</code> properties of the user were replaced by the <code class="prettyprint">tz_info</code> object.</li>
-<li>The <code class="prettyprint">is_dummy</code> and <code class="prettyprint">guide_mode</code> properties of the user were removed.</li>
-<li>The <code class="prettyprint">has_push_reminders</code>, <code class="prettyprint">beta</code>, <code class="prettyprint">restrictions</code>, and <code class="prettyprint">dateist_inline_disabled</code> properties of the user were moved to the <code class="prettyprint">features</code> object.</li>
-<li>The <code class="prettyprint">uid</code> property of labels was removed.</li>
-<li>The <code class="prettyprint">user_id</code> property of filters was removed.</li>
-<li>The <code class="prettyprint">due_date</code> property of reminders was removed.</li>
-<li>The <code class="prettyprint">user_id</code>, <code class="prettyprint">archived_date</code>, and <code class="prettyprint">archived_timestamp</code> properties of projects were removed.</li>
-<li>The <code class="prettyprint">due_date</code> property of items was removed.</li>
-<li>Only 10 notes per item are returned with the <code class="prettyprint">sync</code> call and thus the <code class="prettyprint">get_item</code> call should be used for more.</li>
-</ul>
 
         <h1 id='getting-started'>Getting started</h1>
 <p>In this section we will do some common things, that many of our users ask for help on accomplishing them.  We will mostly use the <code class="prettyprint">sync</code> call, which is described in detailed at the <code class="prettyprint">Sync</code> section, but for now you can just consider it just an endpoint, and you will soon figure some of the things it can do, just by having a look at some examples.</p>
@@ -7034,6 +7011,30 @@ X-Todoist-Hmac-SHA256: UEEq9si3Vf9yRSrLthbpazbb69kP9+CZQ7fXmVyjhPs=
 it would be re-delivered after 15 mins, and each notification would be re-delivered for at most three times.</p>
 
 <p><strong>Your callback endpoint must respond with a HTTP 200 when receiving an event notification request.</strong> A response other than HTTP 200 would be considered as failed delivery, and the notification would be delivered again.</p>
+
+        <h1 id='changes'>Changes</h1>
+<p>In this section we document all the changes between the two different versions of our API, in order to make it easier to upgrade your client code.</p>
+<h2 id='migration-guide'>Migration guide</h2>
+<p>The new v7 Todoist API is still based on the original Todoist Sync API (as was the case for the v6 API), so the differences between the two APIs aren&rsquo;t as extended as those between the v5 and v6 APIs.</p>
+
+<p>The main difference between the two APIs is that the <code class="prettyprint">seq_no</code>, ie. the sequence number which was basically an always increasing number, is not used anymore to implement the incremental sync functionality, but instead the <code class="prettyprint">sync_token</code> has been introduced, a string hash value.  So in order to do the initial full sync instead of <code class="prettyprint">seq_no=0</code>, one needs to send <code class="prettyprint">sync_token=*</code>.  Other than than, the last known value of <code class="prettyprint">sync_token</code> should be used in order to an incremental sync, similar to what was done before with the <code class="prettyprint">seq_no</code>.</p>
+
+<p>Here follows a list of various minor changes from the previous API version:</p>
+
+<ul>
+<li>The <code class="prettyprint">sync_token</code> value is not returned by the <code class="prettyprint">sync</code> call anymore, but the <code class="prettyprint">sync_token</code> and the <code class="prettyprint">full_sync</code> variables are returned instead.</li>
+<li>The <code class="prettyprint">sync</code> call now returns all objects in underscore naming convention, instead of CamelCase, so the <code class="prettyprint">Collaborators</code>, <code class="prettyprint">CollaboratorStates</code>, <code class="prettyprint">DayOrders</code>, <code class="prettyprint">DayOrdersTimestamp</code>, <code class="prettyprint">Filters</code>, <code class="prettyprint">Items</code>, <code class="prettyprint">Labels</code>, <code class="prettyprint">LiveNotifications</code>, <code class="prettyprint">LiveNotificationsLastRead</code>, <code class="prettyprint">Notes</code>, <code class="prettyprint">Projects</code>, <code class="prettyprint">Reminders</code>, <code class="prettyprint">SettingsNotifications</code>, <code class="prettyprint">SyncStatus</code>, <code class="prettyprint">TempIdMapping</code>, and <code class="prettyprint">User</code> objects, where renamed to <code class="prettyprint">collaborators</code>, <code class="prettyprint">collaborator_states</code>, <code class="prettyprint">day_orders</code>, <code class="prettyprint">day_orders_timestamp</code>, <code class="prettyprint">filters</code>, <code class="prettyprint">items</code>, <code class="prettyprint">labels</code>, <code class="prettyprint">live_notifications</code>, <code class="prettyprint">live_notifications_last_read</code>, <code class="prettyprint">notes</code>, <code class="prettyprint">projects</code>, <code class="prettyprint">reminders</code>, <code class="prettyprint">settings_notifications</code>, <code class="prettyprint">sync_status</code>, <code class="prettyprint">temp_id_mapping</code>, and <code class="prettyprint">user</code>, respectively</li>
+<li>The <code class="prettyprint">UserId</code> variable is not returned by the <code class="prettyprint">sync</code> call anymore.</li>
+<li>The <code class="prettyprint">timezone</code> and <code class="prettyprint">tz_offset</code> properties of the user were replaced by the <code class="prettyprint">tz_info</code> object.</li>
+<li>The <code class="prettyprint">is_dummy</code> and <code class="prettyprint">guide_mode</code> properties of the user were removed.</li>
+<li>The <code class="prettyprint">has_push_reminders</code>, <code class="prettyprint">beta</code>, <code class="prettyprint">restrictions</code>, and <code class="prettyprint">dateist_inline_disabled</code> properties of the user were moved to the <code class="prettyprint">features</code> object.</li>
+<li>The <code class="prettyprint">uid</code> property of labels was removed.</li>
+<li>The <code class="prettyprint">user_id</code> property of filters was removed.</li>
+<li>The <code class="prettyprint">due_date</code> property of reminders was removed.</li>
+<li>The <code class="prettyprint">user_id</code>, <code class="prettyprint">archived_date</code>, and <code class="prettyprint">archived_timestamp</code> properties of projects were removed.</li>
+<li>The <code class="prettyprint">due_date</code> property of items was removed.</li>
+<li>Only 10 notes per item are returned with the <code class="prettyprint">sync</code> call and thus the <code class="prettyprint">get_item</code> call should be used for more.</li>
+</ul>
 
     </div>
     <div class="dark-box">
